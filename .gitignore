@@ -14,3 +14,5 @@ private.json
 # for extendscript ID dev
 pdfs
 *.idlk
+tmp/*
+*tmp*

@@ -1,0 +1,16 @@
+.DS_Store
+# nodejs and web dev
+node_modules
+bower_components
+#sublme sftp plugin
+sftp-config.json
+# processing
+sketch.properties
+build-tmp
+# codekit
+.codekit-cache
+# a file with private data
+private.json
+# for extendscript ID dev
+pdfs
+*.idlk

@@ -1,43 +1,3 @@
-(function(thisObj) {
-
-/*! cross-reference.jsx - v0.1.0 - 2015-03-03 */
-/*
- * cross-reference
- * https://github.com/fabiantheblind/emb-scripts
- *
- * Copyright (c) 2015 fabiantheblind
- * Licensed under the MIT license.
- */
-#target "indesign-8" // jshint ignore:line
-var DEBUG = true;
-
-var settings = {
-  "rewirte": true,
-  "source": {
-    "fcquery": "emb-source-test",
-    "mode": SearchModes.grepSearch,
-
-    "findGrepPreferences": {
-      "findWhat": "Hello World"
-    }
-    // "changeGrepPreferences": {
-    //   "changeTo": "Hello InDesign-10!"
-    // },
-  },
-  "target": {
-    "fcquery": "emb-target-test",
-    "mode": SearchModes.grepSearch,
-
-    "findGrepPreferences": {
-      "findWhat": "target"
-    }
-    // "changeGrepPreferences": {
-    //   "changeTo": "Hello InDesign"
-    // },
-  }
-};
-
-
 var reset = function() {
   // now empty the find what field!!!thats important!!!
   app.findGrepPreferences = NothingEnum.nothing;
@@ -124,6 +84,7 @@ var main = function() {
     var data = runner(doc);
     if (DEBUG) {
       $.writeln(data.src.length + " " + data.tgt.length);
+
       // alert("Done\n" + data);
       // $.writeln(data);
     }
@@ -141,4 +102,3 @@ var main = function() {
 };
 
 main();
-})(this);

@@ -21,7 +21,7 @@ module.exports = function(grunt) {
         stripBanners: false
       },
       scripts: {
-        src: ['src/cross-reference.jsx'],
+        src: ['src/head.jsx','src/settings.jsx','src/main.jsx'],
         dest: 'src/tmp/<%= pkg.name %>.concat.<%= pkg.version %>.jsx'
       }
     },

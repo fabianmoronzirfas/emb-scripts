@@ -1,4 +1,3 @@
-
 var settings = {
   "rewirte": true,
   "source": {
@@ -6,22 +5,29 @@ var settings = {
     "mode": SearchModes.grepSearch,
 
     "findGrepPreferences": {
-      "findWhat": "Hello World"
+      "findWhat": "\\[\\[(\\d{1,10}.*?\\d{1,4}.*?)\\]\\]",
+    },
+    "changeGrepPreferences": {
+      "changeTo": "$1"
     }
-    // "changeGrepPreferences": {
-    //   "changeTo": "Hello InDesign-10!"
-    // },
   },
   "target": {
     "fcquery": "emb-target-test",
     "mode": SearchModes.grepSearch,
 
     "findGrepPreferences": {
-      "findWhat": "target"
+      "findWhat": "\\{\\{(\\d{1,10}.*?\\d{1,4}.*?)\\}\\}",
+    },
+    "changeGrepPreferences": {
+      "changeTo": "$1"
     }
-    // "changeGrepPreferences": {
-    //   "changeTo": "Hello InDesign"
-    // },
+  },
+  "hyperlinks":{
+    "prefix":"LYNK-",
+    "appearance": HyperlinkAppearanceHighlight.NONE
   }
 };
 
+if(DEBUG) {
+  settings.hyperlinks.appearance = HyperlinkAppearanceHighlight.OUTLINE;
+}

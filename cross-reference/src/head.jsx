@@ -6,4 +6,4 @@
  * Licensed under the MIT license.
  */
 #target "indesign-8" // jshint ignore:line
-var DEBUG = true;
+var DEBUG = false;

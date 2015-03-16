@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! cross-reference.jsx - v0.1.0 - 2015-03-03 */
+/*! cross-reference.jsx - v0.1.0 - 2015-03-16 */
 /*
  * cross-reference
  * https://github.com/fabiantheblind/emb-scripts
@@ -9,8 +9,7 @@
  * Licensed under the MIT license.
  */
 #target "indesign-8" // jshint ignore:line
-var DEBUG = true;
-
+var DEBUG = false;
 var settings = {
   "rewirte": true,
   "source": {
@@ -18,26 +17,32 @@ var settings = {
     "mode": SearchModes.grepSearch,
 
     "findGrepPreferences": {
-      "findWhat": "Hello World"
+      "findWhat": "\\[\\[(\\d{1,10}.*?\\d{1,4}.*?)\\]\\]",
+    },
+    "changeGrepPreferences": {
+      "changeTo": "$1"
     }
-    // "changeGrepPreferences": {
-    //   "changeTo": "Hello InDesign-10!"
-    // },
   },
   "target": {
     "fcquery": "emb-target-test",
     "mode": SearchModes.grepSearch,
 
     "findGrepPreferences": {
-      "findWhat": "target"
+      "findWhat": "\\{\\{(\\d{1,10}.*?\\d{1,4}.*?)\\}\\}",
+    },
+    "changeGrepPreferences": {
+      "changeTo": "$1"
     }
-    // "changeGrepPreferences": {
-    //   "changeTo": "Hello InDesign"
-    // },
+  },
+  "hyperlinks":{
+    "prefix":"LYNK-",
+    "appearance": HyperlinkAppearanceHighlight.NONE
   }
 };
 
-
+if(DEBUG) {
+  settings.hyperlinks.appearance = HyperlinkAppearanceHighlight.OUTLINE;
+}
 var reset = function() {
   // now empty the find what field!!!thats important!!!
   app.findGrepPreferences = NothingEnum.nothing;
@@ -45,6 +50,11 @@ var reset = function() {
   app.changeGrepPreferences = NothingEnum.nothing;
 };
 
+var padder = function(n, width, z) {
+  z = z || '0';
+  n = n + '';
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+};
 
 var trainer = function(obj) {
 
@@ -61,7 +71,7 @@ var trainer = function(obj) {
       reset();
       //-----------
       app.findGrepPreferences = obj.findGrepPreferences;
-      // app.changeGrepPreferences = obj.changeGrepPreferences;
+      app.changeGrepPreferences = obj.changeGrepPreferences;
       app.saveFindChangeQuery(obj.fcquery, obj.mode);
     }
     // if (passed) return;
@@ -71,22 +81,25 @@ var trainer = function(obj) {
     reset();
     //-----------
     app.findGrepPreferences.findWhat = obj.findGrepPreferences.findWhat;
+    // app.findGrepPreferences.findWhat = obj.findGrepPreferences.findWhat;
+    app.changeGrepPreferences.changeTo = obj.changeGrepPreferences.changeTo;
     // app.findGrepPreferences = obj.findGrepPreferences;
     // app.changeGrepPreferences = obj.changeGrepPreferences;
-    app.findChangeGrepOptions.includeFootnotes = false;
+    app.findChangeGrepOptions.includeFootnotes = true;
     app.findChangeGrepOptions.includeHiddenLayers = true;
     app.findChangeGrepOptions.includeLockedLayersForFind = true;
     app.findChangeGrepOptions.includeLockedStoriesForFind = true;
-    app.findChangeGrepOptions.includeMasterPages = false;
+    app.findChangeGrepOptions.includeMasterPages = true;
 
     app.saveFindChangeQuery(obj.fcquery, obj.mode);
     if (DEBUG) $.writeln("query created");
   }
 };
-var runner = function(d) {
+var searcher = function(d) {
   reset();
   app.loadFindChangeQuery(settings.source.fcquery, settings.source.mode);
   var sources = d.findGrep();
+  reset();
   app.loadFindChangeQuery(settings.target.fcquery, settings.target.mode);
   var targets = d.findGrep();
   found = {
@@ -94,23 +107,100 @@ var runner = function(d) {
     "tgt": targets
   };
 
-  var report = "Sources:\n";
-  for (var i = 0; i < sources.length; i++) {
-    report += sources[i].contents;
-  }
-  report += "\nTargets:\n";
+  // var report = "Sources:\n";
+  // for (var i = 0; i < sources.length; i++) {
+  //   report += sources[i].contents;
+  // }
+  // report += "\nTargets:\n";
 
-  for (var j = 0; j < targets.length; j++) {
-    report += targets[j].contents;
-  }
-  if (DEBUG) $.writeln("\n-----\n" + report);
+  // for (var j = 0; j < targets.length; j++) {
+  //   report += targets[j].contents;
+  // }
+  // if (DEBUG) $.writeln("\n-----\n" + report);
 
   return found;
 };
 
-var hyperlinker = function(d) {
+var cleaner = function(d){
+  app.loadFindChangeQuery(settings.source.fcquery, settings.source.mode);
+  d.changeGrep();
+  reset();
+  reset();
+  app.loadFindChangeQuery(settings.target.fcquery, settings.target.mode);
+  d.changeGrep();
+
+};
+var hl_destroyer = function(d, prefix) {
+
+  var hlsdest = d.hyperlinkTextDestinations;
+
+  for (var j = hlsdest.length - 1; j >= 0; j--) {
+    var dest = hlsdest[j];
+    if (dest.name.substring(0, prefix.length) == prefix) {
+      dest.remove();
+      if (DEBUG) $.writeln("found link destination with prefix: " + prefix + " and removed it");
+    }
+  }
+
+  var hlssrc = d.hyperlinkTextSources;
+  for (var k = hlssrc.length - 1; k >= 0; k--) {
+    var src = hlssrc[k];
+    if (src.name.substring(0, prefix.length) == prefix) {
+      src.remove();
+      if (DEBUG) $.writeln("found link source with prefix: " + prefix + " and removed it");
+    }
+  }
+
+  var hls = d.hyperlinks;
+  for (i = hls.length - 1; i >= 0; i--) {
+    var link = hls[i];
+    if (link.name.substring(0, prefix.length) == prefix) {
+      link.remove();
+      if (DEBUG) $.writeln("found link with prefix: " + prefix + " and removed it");
+    }
+
+  }
+};
+
+var hl_builder = function(d, data, prefix) {
+
+  for (var i = 0; i < data.tgt.length; i++) {
+    // if(DEBUG) $.writeln(data.tgt[i].contents);
+    var clear_tgt_content = data.tgt[i].contents.slice(2, -2);
+    // if(DEBUG) $.writeln(clear_content);
+    var dest = d.hyperlinkTextDestinations.add(data.tgt[i]);
+    dest.name = prefix + clear_tgt_content + padder(i, 4, "-");
+
+    for (var j = 0; j < data.src.length; j++) {
+      var clear_src_content = data.src[j].contents.slice(2, -2);
+      if (clear_src_content == clear_tgt_content) {
+        if (DEBUG) {
+          $.writeln("found a match src: " + clear_src_content + " tgt: " + clear_tgt_content);
+      }
+
+        var src = d.hyperlinkTextSources.add(data.src[j]);
+        src.name = prefix + clear_src_content + padder(j, 4, "-");
+        var hl = d.hyperlinks.add({
+          source: src,
+          destination: dest,
+          highlight: settings.hyperlinks.appearance,
+          name: prefix + clear_src_content + padder(j, 4, "-")
+        });
+
+        // match
+      }
+    }
+  }
+};
+var hyperlinker = function(d, data) {
+  // TODO Give new Hyperlinks names so I can identify them as mine
   // remove all existing hyperlinks
-  d.hyperlinks.everyItem().remove();
+  // d.hyperlinks.everyItem().remove();
+  var prefix = settings.hyperlinks.prefix;
+  // remove links created by script
+  hl_destroyer(d, prefix);
+  hl_builder(d, data, prefix);
+
 
 };
 
@@ -121,18 +211,14 @@ var main = function() {
   if (DEBUG) $.writeln("Trained target");
   if (app.documents.length > 0) {
     var doc = app.activeDocument;
-    var data = runner(doc);
+    var data = searcher(doc);
     if (DEBUG) {
       $.writeln(data.src.length + " " + data.tgt.length);
       // alert("Done\n" + data);
       // $.writeln(data);
+      hyperlinker(doc, data);
+      cleaner(doc);
     }
-
-
-    //  TODO needs matching of source to targets
-    // - will have more sources than targets
-    //  TODO create link
-    //
 
   } else {
 

@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! cross-reference.jsx - v0.1.0 - 2015-03-16 */
+/*! cross-reference.jsx - v0.1.0 - 2015-03-17 */
 /*
  * cross-reference
  * https://github.com/fabiantheblind/emb-scripts
@@ -9,7 +9,7 @@
  * Licensed under the MIT license.
  */
 #target "indesign-8" // jshint ignore:line
-var DEBUG = false;
+var DEBUG = true;
 var settings = {
   "rewirte": true,
   "source": {

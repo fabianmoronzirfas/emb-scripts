@@ -23,6 +23,7 @@
  */
 
 // ##Version history
+// 0.3.1 removed minor bug wroung unused references
 // 0.3.0 works
 // 0.2.0 using extendscript_modules
 // 0.1.0 initial version based on cross-reference.jsx

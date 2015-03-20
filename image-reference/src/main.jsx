@@ -101,7 +101,7 @@ var main = function() {
 
     cleaner(
       data[0].tgt,
-      result_first_run.unused_sources,
+      result_first_run.unused_targets,
       settings.queries[0].target.fcquery,
       settings.queries[0].target.mode,
       settings.queries[0].target.parstyle,
@@ -119,7 +119,7 @@ cleaner(
 
 cleaner(
       data[1].tgt,
-      result_second_run.unused_sources,
+      result_second_run.unused_targets,
       settings.queries[1].target.fcquery,
       settings.queries[1].target.mode,
       settings.queries[1].target.parstyle,

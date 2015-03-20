@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! image-reference.jsx - v0.3.0 - 2015-03-20 */
+/*! image-reference.jsx - v0.3.1 - 2015-03-20 */
 /*
  * image-reference.jsx
  * creates hyperlinks from patterns
@@ -26,6 +26,7 @@
  */
 
 // ##Version history
+// 0.3.1 removed minor bug wroung unused references
 // 0.3.0 works
 // 0.2.0 using extendscript_modules
 // 0.1.0 initial version based on cross-reference.jsx
@@ -549,7 +550,7 @@ var main = function() {
 
     cleaner(
       data[0].tgt,
-      result_first_run.unused_sources,
+      result_first_run.unused_targets,
       settings.queries[0].target.fcquery,
       settings.queries[0].target.mode,
       settings.queries[0].target.parstyle,
@@ -567,7 +568,7 @@ cleaner(
 
 cleaner(
       data[1].tgt,
-      result_second_run.unused_sources,
+      result_second_run.unused_targets,
       settings.queries[1].target.fcquery,
       settings.queries[1].target.mode,
       settings.queries[1].target.parstyle,

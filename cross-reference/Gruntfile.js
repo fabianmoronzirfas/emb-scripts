@@ -21,7 +21,18 @@ module.exports = function(grunt) {
         stripBanners: false
       },
       scripts: {
-        src: ["src/head.jsx","src/global.jsx","src/settings.jsx","../extendscript_modules/system.jsx", "../extendscript_modules/reseter.jsx","../extendscript_modules/padder.jsx","../extendscript_modules/logger.jsx", "../extendscript_modules/trainer.jsx","../extendscript_modules/trainer.jsx","src/main.jsx"],
+        src: [
+          "src/head.jsx",
+          "src/global.jsx",
+          "src/settings.jsx",
+          "../extendscript_modules/system.jsx",
+          "../extendscript_modules/reseter.jsx",
+          "../extendscript_modules/padder.jsx",
+          "../extendscript_modules/logger.jsx",
+          "../extendscript_modules/trainer.jsx",
+          "../extendscript_modules/searcher.jsx",
+          "../extendscript_modules/cleaner.jsx",
+          "src/main.jsx"],
         dest: "src/tmp/<%= pkg.name %>.concat.<%= pkg.version %>.jsx"
       }
     },

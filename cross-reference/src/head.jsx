@@ -18,7 +18,7 @@
  */
 
 // ##Version history
-//
+// 0.4.0 using extendscript_modules
 // 0.3.0 only clean up the ones that are really used
 // 0.2.0 creates report
 // 0.1.2 remove Numbers as well

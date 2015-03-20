@@ -21,7 +21,7 @@
  */
 
 // ##Version history
-//
+// 0.4.0 using extendscript_modules
 // 0.3.0 only clean up the ones that are really used
 // 0.2.0 creates report
 // 0.1.2 remove Numbers as well
@@ -192,88 +192,16 @@ var trainer = function(obj) {
     }
   }
 };
-/**
- * reset the FC fields
- * @return {nothing}
- */
-// var reset = function() {
-//   // now empty the find what field!!!thats important!!!
-//   app.findGrepPreferences = NothingEnum.nothing;
-//   // empts the change to field!!!thats important!!!
-//   app.changeGrepPreferences = NothingEnum.nothing;
-// };
-
-// var padder = function(n, width, z) {
-//   z = z || '0';
-//   n = n + '';
-//   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-// };
-/**
- * train InDesign. Creates the FC queries
- * @param  {Object}   obj  the settings to use
- * @return {nothing}
- */
-// var trainer = function(obj) {
-//   try {
-//     app.loadFindChangeQuery(obj.fcquery, obj.mode);
-//     var passed = true;
-//     if (DEBUG) $.writeln("passed training. Query exists");
-//     if (settings.rewirte === true) {
-//       if (DEBUG) {
-//         $.writeln("rewriting query");
-//       }
-//       // thanks peter kahrel for that path
-//       // http://www.kahrel.plus.com/indesign/grep_query_manager.html
-//       var queryFolder = app.scriptPreferences.scriptsFolder.parent.parent.fsName + "/Find-Change Queries/Grep/";
-//       File(queryFolder + "/" + obj.fcquery + ".xml").remove();
-//       reset();
-//       //-----------
-//       app.findGrepPreferences = obj.findGrepPreferences;
-//       app.changeGrepPreferences = obj.changeGrepPreferences;
-//       app.saveFindChangeQuery(obj.fcquery, obj.mode);
-//     }
-//     // if (passed) return;
-//   } catch (e) {
-//     if (DEBUG) {
-//       $.writeln("could not find query");
-//     }
-//     // setup fc here
-//     reset();
-//     //-----------
-//     app.findGrepPreferences.findWhat = obj.findGrepPreferences.findWhat;
-//     // app.findGrepPreferences.findWhat = obj.findGrepPreferences.findWhat;
-//     app.changeGrepPreferences.changeTo = obj.changeGrepPreferences.changeTo;
-//     // app.findGrepPreferences = obj.findGrepPreferences;
-//     // app.changeGrepPreferences = obj.changeGrepPreferences;
-//     app.findChangeGrepOptions.includeFootnotes = true;
-//     app.findChangeGrepOptions.includeHiddenLayers = true;
-//     app.findChangeGrepOptions.includeLockedLayersForFind = true;
-//     app.findChangeGrepOptions.includeLockedStoriesForFind = true;
-//     app.findChangeGrepOptions.includeMasterPages = true;
-
-//     app.saveFindChangeQuery(obj.fcquery, obj.mode);
-//     if (DEBUG) {
-//       $.writeln("query created");
-//     }
-//   }
-// };
 
 /**
  * search the pattern by FC query
  * @param  {Document} d  the doc to work on
  * @return {Object}      the found items packed in an object
  */
-var searcher = function(d) {
+var searcher = function(d, queryname, querymode) {
   reset();
-  app.loadFindChangeQuery(settings.source.fcquery, settings.source.mode);
-  var sources = d.findGrep();
-  reset();
-  app.loadFindChangeQuery(settings.target.fcquery, settings.target.mode);
-  var targets = d.findGrep();
-  found = {
-    "src": sources,
-    "tgt": targets
-  };
+  app.loadFindChangeQuery(queryname, querymode);
+  var result = d.findGrep();
 
   // var report = "Sources:\n";
   // for (var i = 0; i < sources.length; i++) {
@@ -286,9 +214,8 @@ var searcher = function(d) {
   // }
   // if (DEBUG) $.writeln("\n-----\n" + report);
 
-  return found;
+  return result;
 };
-
 /**
  * Module uses the FindChange possibilites and removes all used references
  * @param  {Array Text}              items  Text elemts returned by app.documents[index].findGrep()
@@ -323,8 +250,44 @@ var cleaner = function(items, unused, query, mode) {
 
   }
   // d.changeGrep();
-
 };
+
+/**
+ * Module uses the FindChange possibilites and removes all used references
+ * @param  {Array Text}              items  Text elemts returned by app.documents[index].findGrep()
+ * @param  {Array of Boolean}        unused Coresponds with the items array if true the element was used
+ * @param  {String}                  query  Name of the FindChange query to use
+ * @param  {SearchModes.grepSearch}  mode   The type of the FC query
+ * @return {nothing}
+ */
+// var cleaner = function(items, unused, query, mode) {
+//   reset();
+//   app.loadFindChangeQuery(query, mode);
+//   for (var i = 0; i < items.length; i++) {
+//     if (DEBUG) {
+//       $.writeln(items[i].contents);
+//       $.write("is ");
+//       if (unused[i] === true) {
+//         $.writeln("used ");
+
+//       } else {
+//         $.writeln("unused ");
+
+//       }
+
+//     }
+//     if (unused[i] === true) {
+//       if (DEBUG) {
+//         $.writeln("clean up " + items[i].contents);
+//       }
+//       items[i].changeGrep();
+
+//     }
+
+//   }
+//   // d.changeGrep();
+
+// };
 /**
  * Removes all hyperlinks, hl-sources and hl-targets currently unused
  * @param  {Document} d       the current document
@@ -469,31 +432,6 @@ var hyperlinker = function(d, data) {
   return res;
 };
 
-// /**
-//  * a logging function to get the result of the process to the user
-//  * @param  {Document}  d    the doc to work on
-//  * @param  {String}    str  the string to log
-//  * @return {nothing}
-//  */
-// var logger = function(d, str) {
-//   var del = settings.delimiter;
-//   var path = d.filePath + "/log." + File($.fileName).name + " " + formatted_date + " " + formatted_time + ".txt";
-//   if (DEBUG) {
-//     $.writeln(path);
-//   }
-
-//   var head = "Script: " + File($.fileName).name + del + "Execution time: " + formatted_date + " " + formatted_time + del;
-//   var log = File(path);
-//   log.open("w");
-//   log.encoding = "UTF-8";
-//   log.lineFeed = settings.linefeeds; //convert to UNIX lineFeed
-//   // if(log !==null){
-//   log.write(head + str);
-//   log.close();
-//   log.execute();
-//   // }
-
-// };
 
 /**
  * The main function to execute
@@ -520,7 +458,14 @@ var main = function() {
         doc.save();
       }
     }
-    var data = searcher(doc);
+    var sources = searcher(doc, settings.source.fcquery, settings.source.mode);
+    var targets = searcher(doc, settings.target.fcquery, settings.target.mode);
+
+    var data = {
+      "src": sources,
+      "tgt": targets
+    };
+
     if (DEBUG) {
       $.writeln(data.src.length + " " + data.tgt.length);
     }

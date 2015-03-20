@@ -10,7 +10,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
     meta: {
-      version: "0.1.0"
+      version: "0.2.0"
     },
 
     concat: {
@@ -32,6 +32,7 @@ module.exports = function(grunt) {
           "../extendscript_modules/trainer.jsx",
           "../extendscript_modules/searcher.jsx",
           "../extendscript_modules/cleaner.jsx",
+          "../extendscript_modules/hyperlinker.jsx",
           "src/main.jsx"],
         dest: "src/tmp/<%= pkg.name %>.concat.<%= pkg.version %>.jsx"
       }

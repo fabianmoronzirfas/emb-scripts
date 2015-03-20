@@ -3,8 +3,8 @@
  * @type {Object}
  */
 var settings = {
-  "delimiter":null,
-  "linefeeds":null,
+  "delimiter": null,
+  "linefeeds": null,
   "rewirte": true,
   "source": {
     "fcquery": "emb-source-cross",
@@ -15,7 +15,9 @@ var settings = {
     },
     "changeGrepPreferences": {
       "changeTo": "$1"
-    }
+    },
+    "parstyle": null,
+    "charstyle": null,
   },
   "target": {
     "fcquery": "emb-target-cross",
@@ -26,16 +28,18 @@ var settings = {
     },
     "changeGrepPreferences": {
       "changeTo": "$1"
-    }
+    },
+    "parstyle": null,
+    "charstyle": null
   },
-  "hyperlinks":{
-    "prefix":"LYNK-",
+  "hyperlinks": {
+    "prefix": "LYNK-",
     "appearance": HyperlinkAppearanceHighlight.NONE
   }
 };
 
 
 
-if(DEBUG) {
+if (DEBUG) {
   settings.hyperlinks.appearance = HyperlinkAppearanceHighlight.OUTLINE;
 }

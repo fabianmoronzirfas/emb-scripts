@@ -10,7 +10,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
     meta: {
-      version: "0.1.0"
+      version: "0.2.0"
     },
 
     concat: {
@@ -21,7 +21,19 @@ module.exports = function(grunt) {
         stripBanners: false
       },
       scripts: {
-        src: ["src/head.jsx","src/global.jsx","../cross-reference/src/settings.jsx","../cross-reference/src/system.jsx","../cross-reference/src/main.jsx"],
+        src: [
+          "src/head.jsx",
+          "src/global.jsx",
+          "src/settings.jsx",
+          "../extendscript_modules/system.jsx",
+          "../extendscript_modules/reseter.jsx",
+          "../extendscript_modules/padder.jsx",
+          "../extendscript_modules/logger.jsx",
+          "../extendscript_modules/trainer.jsx",
+          "../extendscript_modules/searcher.jsx",
+          "../extendscript_modules/cleaner.jsx",
+          "../extendscript_modules/hyperlinker.jsx",
+          "src/main.jsx"],
         dest: "src/tmp/<%= pkg.name %>.concat.<%= pkg.version %>.jsx"
       }
     },
@@ -49,7 +61,7 @@ module.exports = function(grunt) {
       },
     },
     watch: {
-      files: ["src/*.jsx", "src/*.js", "src/lib/*"],
+      files: ["src/*.jsx", "src/*.js", "src/lib/*","../extendscript_modules/*.jsx"],
       tasks: ["concat:scripts", "wrap:script","copy:script"]
     },
     markdown: {

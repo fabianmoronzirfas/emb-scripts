@@ -3,11 +3,16 @@
  * creates hyperlinks from patterns
  * currently the pattern is for the sources
  *
- *  ##NumberName YYYY##
+ *  ##(NumberAbb. Number)##
  *
  * for the targets
  *
- * ||NumberName YYYY||
+ * ##NumberName Number##
+ *
+ * it also connects the targets from process one to
+ *
+ * ||NumberName Number||
+ *
  *
  * it creates its own find change grep query if necessary and executes it
  *
@@ -18,7 +23,8 @@
  */
 
 // ##Version history
-//
+// 0.3.0 works
+// 0.2.0 using extendscript_modules
 // 0.1.0 initial version based on cross-reference.jsx
 //
-//
+

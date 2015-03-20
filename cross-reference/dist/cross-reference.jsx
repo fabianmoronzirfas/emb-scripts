@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! cross-reference.jsx - v0.3.0 - 2015-03-20 */
+/*! cross-reference.jsx - v0.4.0 - 2015-03-20 */
 /*
  * cross-reference.jsx
  * creates hyperlinks from patterns
@@ -28,7 +28,7 @@
 // 0.1.1 fix debug bug where hyperlink creation was not executed
 // 0.1.0 initial version
 //
-//
+
 // #target "indesign-8" // jshint ignore:line
 
 var DEBUG = false;
@@ -41,8 +41,8 @@ var formatted_time = now.getHours().toString()+ "-" + now.getMinutes().toString(
  * @type {Object}
  */
 var settings = {
-  "delimiter":null,
-  "linefeeds":null,
+  "delimiter": null,
+  "linefeeds": null,
   "rewirte": true,
   "source": {
     "fcquery": "emb-source-cross",
@@ -53,7 +53,9 @@ var settings = {
     },
     "changeGrepPreferences": {
       "changeTo": "$1"
-    }
+    },
+    "parstyle": null,
+    "charstyle": null,
   },
   "target": {
     "fcquery": "emb-target-cross",
@@ -64,17 +66,19 @@ var settings = {
     },
     "changeGrepPreferences": {
       "changeTo": "$1"
-    }
+    },
+    "parstyle": null,
+    "charstyle": null
   },
-  "hyperlinks":{
-    "prefix":"LYNK-",
+  "hyperlinks": {
+    "prefix": "LYNK-",
     "appearance": HyperlinkAppearanceHighlight.NONE
   }
 };
 
 
 
-if(DEBUG) {
+if (DEBUG) {
   settings.hyperlinks.appearance = HyperlinkAppearanceHighlight.OUTLINE;
 }
 /**
@@ -83,12 +87,12 @@ if(DEBUG) {
  * @return {nothing}
  */
 if($.os.substring(0,1) == "M"){
-  if(DEBUG){$.writeln("Macintosh");}
+  if(DEBUG){$.writeln("OS is Macintosh");}
   settings.delimiter = "\n";
   settings.linefeeds = "Unix";
 
 }else{
-  if(DEBUG){$.writeln("Windows");}
+  if(DEBUG){$.writeln("OS is Windows");}
   settings.delimiter = "\r";
   settings.linefeeds = "Windows";
 }
@@ -224,7 +228,7 @@ var searcher = function(d, queryname, querymode) {
  * @param  {SearchModes.grepSearch}  mode   The type of the FC query
  * @return {nothing}
  */
-var cleaner = function(items, unused, query, mode) {
+var cleaner = function(items, unused, query, mode, parstyle, charstyle) {
   reset();
   app.loadFindChangeQuery(query, mode);
   for (var i = 0; i < items.length; i++) {
@@ -244,6 +248,14 @@ var cleaner = function(items, unused, query, mode) {
       if (DEBUG) {
         $.writeln("clean up " + items[i].contents);
       }
+      if(parstyle !== null){
+        app.changeGrepPreferences.appliedParagraphStyle = app.activeDocument.paragraphStyles.item( parstyle);
+      }
+
+      if(charstyle !== null){
+        app.changeGrepPreferences.appliedCharacterStyle = app.activeDocument.characterStyles.item( charstyle);
+      }
+
       items[i].changeGrep();
 
     }
@@ -251,43 +263,6 @@ var cleaner = function(items, unused, query, mode) {
   }
   // d.changeGrep();
 };
-
-/**
- * Module uses the FindChange possibilites and removes all used references
- * @param  {Array Text}              items  Text elemts returned by app.documents[index].findGrep()
- * @param  {Array of Boolean}        unused Coresponds with the items array if true the element was used
- * @param  {String}                  query  Name of the FindChange query to use
- * @param  {SearchModes.grepSearch}  mode   The type of the FC query
- * @return {nothing}
- */
-// var cleaner = function(items, unused, query, mode) {
-//   reset();
-//   app.loadFindChangeQuery(query, mode);
-//   for (var i = 0; i < items.length; i++) {
-//     if (DEBUG) {
-//       $.writeln(items[i].contents);
-//       $.write("is ");
-//       if (unused[i] === true) {
-//         $.writeln("used ");
-
-//       } else {
-//         $.writeln("unused ");
-
-//       }
-
-//     }
-//     if (unused[i] === true) {
-//       if (DEBUG) {
-//         $.writeln("clean up " + items[i].contents);
-//       }
-//       items[i].changeGrep();
-
-//     }
-
-//   }
-//   // d.changeGrep();
-
-// };
 /**
  * Removes all hyperlinks, hl-sources and hl-targets currently unused
  * @param  {Document} d       the current document
@@ -339,13 +314,20 @@ var hl_destroyer = function(d, prefix) {
  * @param  {String}   prefix  the refix for the hyperlinks
  * @return {Object}           a collection of results for further processing
  */
-var hl_builder = function(d, data, prefix) {
+var hl_builder = function(d, data, prefix, slice) {
   var del = settings.delimiter;
   var report = "";
   var unused_tgt_report = "";
   var unused_src_report = "";
   var unused_sources = [];
   var unused_targets = [];
+
+  if(slice === null || slice === undefined){
+    slice = {
+      "src":2,
+      "tgt":2
+    };
+  }
   for (var k = 0; k < data.src.length; k++) {
     unused_sources.push(false);
   }
@@ -355,7 +337,7 @@ var hl_builder = function(d, data, prefix) {
   for (var i = 0; i < data.tgt.length; i++) {
     var tgt_has_src = false;
     // if(DEBUG) $.writeln(data.tgt[i].contents);
-    var clear_tgt_content = data.tgt[i].contents.slice(2, -2);
+    var clear_tgt_content = data.tgt[i].contents.slice(slice.tgt, -slice.tgt);
     // if(DEBUG) $.writeln(clear_content);
     report += "## " + data.tgt[i].contents + del + del;
     var dest = d.hyperlinkTextDestinations.add(data.tgt[i]);
@@ -364,7 +346,7 @@ var hl_builder = function(d, data, prefix) {
 
     for (var j = 0; j < data.src.length; j++) {
       // var src_has_tgt = false;
-      var clear_src_content = data.src[j].contents.slice(2, -2);
+      var clear_src_content = data.src[j].contents.slice(slice.src, -slice.src);
       if (clear_src_content == clear_tgt_content) {
         tgt_has_src = true;
         // src_has_tgt = true;
@@ -417,17 +399,19 @@ var hl_builder = function(d, data, prefix) {
  * @param  {Object}   data  collection of elements found by findGrep()
  * @return {Object}         pass through the result of the hl_builder()
  */
-var hyperlinker = function(d, data) {
+var hyperlinker = function(d, data, slice, prefix) {
   // TODO Give new Hyperlinks names so I can identify them as mine
   // remove all existing hyperlinks
   // d.hyperlinks.everyItem().remove();
-  var prefix = settings.hyperlinks.prefix;
+  if(prefix === null || prefix === undefined){
+    prefix = settings.hyperlinks.prefix;
+  }
   // remove links created by script
   //
   // hl_destroyer(d, prefix); // <-- Should not happen
   // it could be that some links get added after script run.
   //
-  var res = hl_builder(d, data, prefix);
+  var res = hl_builder(d, data, prefix, slice);
 
   return res;
 };
@@ -435,6 +419,7 @@ var hyperlinker = function(d, data) {
 
 /**
  * The main function to execute
+ * everything else is separated into modules
  * @return {nothing}
  */
 var main = function() {
@@ -475,8 +460,8 @@ var main = function() {
     var result = hyperlinker(doc, data);
     var str = "#Overview: " + del + "Found: " + del + "Sources: " + data.src.length + del + "Targets: " + data.tgt.length + del + del;
 
-    cleaner(data.src, result.unused_sources, settings.source.fcquery, settings.source.mode);
-    cleaner(data.tgt, result.unused_targets, settings.target.fcquery, settings.target.mode);
+    cleaner(data.src, result.unused_sources, settings.source.fcquery, settings.source.mode, null, null);
+    cleaner(data.tgt, result.unused_targets, settings.target.fcquery, settings.target.mode, null, null);
     var line = del + "---------------------------------" + del;
     logger(doc, str + result.unused_src_report + del + result.unused_tgt_report + line + del + result.report);
 

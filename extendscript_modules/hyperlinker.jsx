@@ -49,13 +49,20 @@ var hl_destroyer = function(d, prefix) {
  * @param  {String}   prefix  the refix for the hyperlinks
  * @return {Object}           a collection of results for further processing
  */
-var hl_builder = function(d, data, prefix) {
+var hl_builder = function(d, data, prefix, slice) {
   var del = settings.delimiter;
   var report = "";
   var unused_tgt_report = "";
   var unused_src_report = "";
   var unused_sources = [];
   var unused_targets = [];
+
+  if(slice === null || slice === undefined){
+    slice = {
+      "src":2,
+      "tgt":2
+    };
+  }
   for (var k = 0; k < data.src.length; k++) {
     unused_sources.push(false);
   }
@@ -65,7 +72,7 @@ var hl_builder = function(d, data, prefix) {
   for (var i = 0; i < data.tgt.length; i++) {
     var tgt_has_src = false;
     // if(DEBUG) $.writeln(data.tgt[i].contents);
-    var clear_tgt_content = data.tgt[i].contents.slice(2, -2);
+    var clear_tgt_content = data.tgt[i].contents.slice(slice.tgt, -slice.tgt);
     // if(DEBUG) $.writeln(clear_content);
     report += "## " + data.tgt[i].contents + del + del;
     var dest = d.hyperlinkTextDestinations.add(data.tgt[i]);
@@ -74,7 +81,7 @@ var hl_builder = function(d, data, prefix) {
 
     for (var j = 0; j < data.src.length; j++) {
       // var src_has_tgt = false;
-      var clear_src_content = data.src[j].contents.slice(2, -2);
+      var clear_src_content = data.src[j].contents.slice(slice.src, -slice.src);
       if (clear_src_content == clear_tgt_content) {
         tgt_has_src = true;
         // src_has_tgt = true;
@@ -127,17 +134,19 @@ var hl_builder = function(d, data, prefix) {
  * @param  {Object}   data  collection of elements found by findGrep()
  * @return {Object}         pass through the result of the hl_builder()
  */
-var hyperlinker = function(d, data) {
+var hyperlinker = function(d, data, slice, prefix) {
   // TODO Give new Hyperlinks names so I can identify them as mine
   // remove all existing hyperlinks
   // d.hyperlinks.everyItem().remove();
-  var prefix = settings.hyperlinks.prefix;
+  if(prefix === null || prefix === undefined){
+    prefix = settings.hyperlinks.prefix;
+  }
   // remove links created by script
   //
   // hl_destroyer(d, prefix); // <-- Should not happen
   // it could be that some links get added after script run.
   //
-  var res = hl_builder(d, data, prefix);
+  var res = hl_builder(d, data, prefix, slice);
 
   return res;
 };

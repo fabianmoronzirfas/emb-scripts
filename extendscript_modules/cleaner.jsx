@@ -6,7 +6,7 @@
  * @param  {SearchModes.grepSearch}  mode   The type of the FC query
  * @return {nothing}
  */
-var cleaner = function(items, unused, query, mode) {
+var cleaner = function(items, unused, query, mode, parstyle, charstyle) {
   reset();
   app.loadFindChangeQuery(query, mode);
   for (var i = 0; i < items.length; i++) {
@@ -26,6 +26,14 @@ var cleaner = function(items, unused, query, mode) {
       if (DEBUG) {
         $.writeln("clean up " + items[i].contents);
       }
+      if(parstyle !== null){
+        app.changeGrepPreferences.appliedParagraphStyle = app.activeDocument.paragraphStyles.item( parstyle);
+      }
+
+      if(charstyle !== null){
+        app.changeGrepPreferences.appliedCharacterStyle = app.activeDocument.characterStyles.item( charstyle);
+      }
+
       items[i].changeGrep();
 
     }

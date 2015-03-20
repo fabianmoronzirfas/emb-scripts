@@ -1,61 +1,74 @@
-var reset = function() {
-  // now empty the find what field!!!thats important!!!
-  app.findGrepPreferences = NothingEnum.nothing;
-  // empts the change to field!!!thats important!!!
-  app.changeGrepPreferences = NothingEnum.nothing;
-};
+/**
+ * reset the FC fields
+ * @return {nothing}
+ */
+// var reset = function() {
+//   // now empty the find what field!!!thats important!!!
+//   app.findGrepPreferences = NothingEnum.nothing;
+//   // empts the change to field!!!thats important!!!
+//   app.changeGrepPreferences = NothingEnum.nothing;
+// };
 
-var padder = function(n, width, z) {
-  z = z || '0';
-  n = n + '';
-  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-};
+// var padder = function(n, width, z) {
+//   z = z || '0';
+//   n = n + '';
+//   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+// };
+/**
+ * train InDesign. Creates the FC queries
+ * @param  {Object}   obj  the settings to use
+ * @return {nothing}
+ */
+// var trainer = function(obj) {
+//   try {
+//     app.loadFindChangeQuery(obj.fcquery, obj.mode);
+//     var passed = true;
+//     if (DEBUG) $.writeln("passed training. Query exists");
+//     if (settings.rewirte === true) {
+//       if (DEBUG) {
+//         $.writeln("rewriting query");
+//       }
+//       // thanks peter kahrel for that path
+//       // http://www.kahrel.plus.com/indesign/grep_query_manager.html
+//       var queryFolder = app.scriptPreferences.scriptsFolder.parent.parent.fsName + "/Find-Change Queries/Grep/";
+//       File(queryFolder + "/" + obj.fcquery + ".xml").remove();
+//       reset();
+//       //-----------
+//       app.findGrepPreferences = obj.findGrepPreferences;
+//       app.changeGrepPreferences = obj.changeGrepPreferences;
+//       app.saveFindChangeQuery(obj.fcquery, obj.mode);
+//     }
+//     // if (passed) return;
+//   } catch (e) {
+//     if (DEBUG) {
+//       $.writeln("could not find query");
+//     }
+//     // setup fc here
+//     reset();
+//     //-----------
+//     app.findGrepPreferences.findWhat = obj.findGrepPreferences.findWhat;
+//     // app.findGrepPreferences.findWhat = obj.findGrepPreferences.findWhat;
+//     app.changeGrepPreferences.changeTo = obj.changeGrepPreferences.changeTo;
+//     // app.findGrepPreferences = obj.findGrepPreferences;
+//     // app.changeGrepPreferences = obj.changeGrepPreferences;
+//     app.findChangeGrepOptions.includeFootnotes = true;
+//     app.findChangeGrepOptions.includeHiddenLayers = true;
+//     app.findChangeGrepOptions.includeLockedLayersForFind = true;
+//     app.findChangeGrepOptions.includeLockedStoriesForFind = true;
+//     app.findChangeGrepOptions.includeMasterPages = true;
 
-var trainer = function(obj) {
+//     app.saveFindChangeQuery(obj.fcquery, obj.mode);
+//     if (DEBUG) {
+//       $.writeln("query created");
+//     }
+//   }
+// };
 
-  try {
-    app.loadFindChangeQuery(obj.fcquery, obj.mode);
-    var passed = true;
-    if (DEBUG) $.writeln("passed training. Query exists");
-    if (settings.rewirte === true) {
-      if (DEBUG) {
-        $.writeln("rewriting query");
-      }
-      // thanks peter kahrel for that path
-      // http://www.kahrel.plus.com/indesign/grep_query_manager.html
-      var queryFolder = app.scriptPreferences.scriptsFolder.parent.parent.fsName + "/Find-Change Queries/Grep/";
-      File(queryFolder + "/" + obj.fcquery + ".xml").remove();
-      reset();
-      //-----------
-      app.findGrepPreferences = obj.findGrepPreferences;
-      app.changeGrepPreferences = obj.changeGrepPreferences;
-      app.saveFindChangeQuery(obj.fcquery, obj.mode);
-    }
-    // if (passed) return;
-  } catch (e) {
-    if (DEBUG) {
-      $.writeln("could not find query");
-    }
-    // setup fc here
-    reset();
-    //-----------
-    app.findGrepPreferences.findWhat = obj.findGrepPreferences.findWhat;
-    // app.findGrepPreferences.findWhat = obj.findGrepPreferences.findWhat;
-    app.changeGrepPreferences.changeTo = obj.changeGrepPreferences.changeTo;
-    // app.findGrepPreferences = obj.findGrepPreferences;
-    // app.changeGrepPreferences = obj.changeGrepPreferences;
-    app.findChangeGrepOptions.includeFootnotes = true;
-    app.findChangeGrepOptions.includeHiddenLayers = true;
-    app.findChangeGrepOptions.includeLockedLayersForFind = true;
-    app.findChangeGrepOptions.includeLockedStoriesForFind = true;
-    app.findChangeGrepOptions.includeMasterPages = true;
-
-    app.saveFindChangeQuery(obj.fcquery, obj.mode);
-    if (DEBUG) {
-      $.writeln("query created");
-    }
-  }
-};
+/**
+ * search the pattern by FC query
+ * @param  {Document} d  the doc to work on
+ * @return {Object}      the found items packed in an object
+ */
 var searcher = function(d) {
   reset();
   app.loadFindChangeQuery(settings.source.fcquery, settings.source.mode);
@@ -82,6 +95,14 @@ var searcher = function(d) {
   return found;
 };
 
+/**
+ * Module uses the FindChange possibilites and removes all used references
+ * @param  {Array Text}              items  Text elemts returned by app.documents[index].findGrep()
+ * @param  {Array of Boolean}        unused Coresponds with the items array if true the element was used
+ * @param  {String}                  query  Name of the FindChange query to use
+ * @param  {SearchModes.grepSearch}  mode   The type of the FC query
+ * @return {nothing}
+ */
 var cleaner = function(items, unused, query, mode) {
   reset();
   app.loadFindChangeQuery(query, mode);
@@ -100,7 +121,7 @@ var cleaner = function(items, unused, query, mode) {
     }
     if (unused[i] === true) {
       if (DEBUG) {
-        $.writeln("clena up " + items[i].contents);
+        $.writeln("clean up " + items[i].contents);
       }
       items[i].changeGrep();
 
@@ -110,6 +131,12 @@ var cleaner = function(items, unused, query, mode) {
   // d.changeGrep();
 
 };
+/**
+ * Removes all hyperlinks, hl-sources and hl-targets currently unused
+ * @param  {Document} d       the current document
+ * @param  {String}   prefix  a prefix for identifiying the hyperlinks
+ * @return {nothing}
+ */
 var hl_destroyer = function(d, prefix) {
 
   var hlsdest = d.hyperlinkTextDestinations;
@@ -148,6 +175,13 @@ var hl_destroyer = function(d, prefix) {
   }
 };
 
+/**
+ * builds the hyperlinks
+ * @param  {Document} d       the doc to work on
+ * @param  {Object}   data    an object that holds all the found items
+ * @param  {String}   prefix  the refix for the hyperlinks
+ * @return {Object}           a collection of results for further processing
+ */
 var hl_builder = function(d, data, prefix) {
   var del = settings.delimiter;
   var report = "";
@@ -219,6 +253,13 @@ var hl_builder = function(d, data, prefix) {
     "report": report
   };
 };
+
+/**
+ * This is the main element to call the hyperlink destroy and creation
+ * @param  {Document} d     the document to work on
+ * @param  {Object}   data  collection of elements found by findGrep()
+ * @return {Object}         pass through the result of the hl_builder()
+ */
 var hyperlinker = function(d, data) {
   // TODO Give new Hyperlinks names so I can identify them as mine
   // remove all existing hyperlinks
@@ -234,25 +275,36 @@ var hyperlinker = function(d, data) {
   return res;
 };
 
-var logger = function(d, str) {
-  var del = settings.delimiter;
-  var path = d.filePath + "/log." + File($.fileName).name + " " + formatted_date + " " + formatted_time + ".txt";
-  if (DEBUG) {
-    $.writeln(path);
-  }
+// /**
+//  * a logging function to get the result of the process to the user
+//  * @param  {Document}  d    the doc to work on
+//  * @param  {String}    str  the string to log
+//  * @return {nothing}
+//  */
+// var logger = function(d, str) {
+//   var del = settings.delimiter;
+//   var path = d.filePath + "/log." + File($.fileName).name + " " + formatted_date + " " + formatted_time + ".txt";
+//   if (DEBUG) {
+//     $.writeln(path);
+//   }
 
-  var head = "Script: " + File($.fileName).name + del + "Execution time: " + formatted_date + " " + formatted_time + del;
-  var log = File(path);
-  log.open("w");
-  log.encoding = "UTF-8";
-  log.lineFeed = settings.linefeeds; //convert to UNIX lineFeed
-  // if(log !==null){
-  log.write(head + str);
-  log.close();
-  log.execute();
-  // }
+//   var head = "Script: " + File($.fileName).name + del + "Execution time: " + formatted_date + " " + formatted_time + del;
+//   var log = File(path);
+//   log.open("w");
+//   log.encoding = "UTF-8";
+//   log.lineFeed = settings.linefeeds; //convert to UNIX lineFeed
+//   // if(log !==null){
+//   log.write(head + str);
+//   log.close();
+//   log.execute();
+//   // }
 
-};
+// };
+
+/**
+ * The main function to execute
+ * @return {nothing}
+ */
 var main = function() {
   trainer(settings.source);
   if (DEBUG) {

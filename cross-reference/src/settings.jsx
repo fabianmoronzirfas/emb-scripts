@@ -1,9 +1,13 @@
+/**
+ * the main settings object
+ * @type {Object}
+ */
 var settings = {
   "delimiter":null,
   "linefeeds":null,
   "rewirte": true,
   "source": {
-    "fcquery": "emb-source-test",
+    "fcquery": "emb-source-cross",
     "mode": SearchModes.grepSearch,
 
     "findGrepPreferences": {
@@ -14,7 +18,7 @@ var settings = {
     }
   },
   "target": {
-    "fcquery": "emb-target-test",
+    "fcquery": "emb-target-cross",
     "mode": SearchModes.grepSearch,
 
     "findGrepPreferences": {
@@ -32,16 +36,6 @@ var settings = {
 
 
 
-if($.os.substring(0,1) == "M"){
-  if(DEBUG){$.writeln("Macintosh");}
-  settings.delimiter = "\n";
-  settings.linefeeds = "Unix";
-
-}else{
-  if(DEBUG){$.writeln("Windows");}
-  settings.delimiter = "\r";
-  settings.linefeeds = "Windows";
-}
 if(DEBUG) {
   settings.hyperlinks.appearance = HyperlinkAppearanceHighlight.OUTLINE;
 }

@@ -60,9 +60,11 @@ var main = function() {
       "tgt": 2
     };
     var prefix = settings.hyperlinks.prefix + settings.queries[0].prefix;
-    var result_first_run = hyperlinker(doc, data[0], slice, prefix);
+    var results = [];
+    results.push(hyperlinker(doc, data[0], slice, prefix));
+    // var result_first_run = ;
     if (DEBUG) {
-      $.writeln(result_first_run.toSource());
+      $.writeln(results[0].toSource());
     }
 
     if (DEBUG) {
@@ -90,64 +92,66 @@ var main = function() {
     // };
     slice.src = 2;
     prefix = settings.hyperlinks.prefix + settings.queries[1].prefix;
-    var result_second_run = hyperlinker(doc, data[1], slice, prefix);
+    results.push(hyperlinker(doc, data[1], slice, prefix));
 
 
     if (DEBUG) {
-      $.writeln(result_second_run.toSource());
+      $.writeln(results[1].toSource());
     }
 
 
     // clean up first
+for(var i = 0;i < data.length;i++){
 
     cleaner(
-      data[0].src,
-      result_first_run.unused_sources,
-      settings.queries[0].source.fcquery,
-      settings.queries[0].source.mode,
+      data[i].src,
+      results[i].unused_sources,
+      settings.queries[i].source.fcquery,
+      settings.queries[i].source.mode,
       null,
-      settings.queries[0].source.charstyle,
+      settings.queries[i].source.charstyle,
       doc
     );
 
     cleaner(
-      data[0].tgt,
-      result_first_run.unused_targets,
-      settings.queries[0].target.fcquery,
-      settings.queries[0].target.mode,
+      data[i].tgt,
+      results[i].unused_targets,
+      settings.queries[i].target.fcquery,
+      settings.queries[i].target.mode,
       null,
-      settings.queries[0].target.charstyle,
+      settings.queries[i].target.charstyle,
       doc
     );
+}
 
 
-    cleaner(
-      data[1].src,
-      result_second_run.unused_sources,
-      settings.queries[1].source.fcquery,
-      settings.queries[1].source.mode,
-      null,
-      settings.queries[1].source.charstyle,
-      doc
-    );
 
+    // cleaner(
+    //   data[1].src,
+    //   result_second_run.unused_sources,
+    //   settings.queries[1].source.fcquery,
+    //   settings.queries[1].source.mode,
+    //   null,
+    //   settings.queries[1].source.charstyle,
+    //   doc
+    // );
 
-    cleaner(
-      data[1].tgt,
-      result_second_run.unused_targets,
-      settings.queries[1].target.fcquery,
-      settings.queries[1].target.mode,
-      null,
-      settings.queries[1].target.charstyle,
-      doc
-    );
+    // cleaner(
+    //   data[1].tgt,
+    //   result_second_run.unused_targets,
+    //   settings.queries[1].target.fcquery,
+    //   settings.queries[1].target.mode,
+    //   null,
+    //   settings.queries[1].target.charstyle,
+    //   doc
+    // );
 
     var str = "#Overview: " + del +
       "Found: " + del + "Sources: " + data[0].src.length + del + "Targets: " + data[0].tgt.length + del + del + "Sources: " + data[1].src.length + del + "Targets: " + data[1].tgt.length + del + del;
 
     var line = del + "---------------------------------" + del;
-    var res = str + result_first_run.unused_src_report + del + result_first_run.unused_tgt_report + line + del;
-    res += result_second_run.unused_src_report + del + result_second_run.unused_tgt_report + line + del + result_first_run.report + result_second_run.report;
+    var res = str + results[0].unused_src_report + del + results[0].unused_tgt_report + line + del;
+    res += results[1].unused_src_report + del + results[1].unused_tgt_report + line + del + results[0].report + results[1].report;
     logger(doc, res);
 
   } else {

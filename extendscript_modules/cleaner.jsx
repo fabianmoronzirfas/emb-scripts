@@ -7,7 +7,7 @@
  * @param  {Document}                d      the current doc to work on
  * @return {nothing}
  */
-var cleaner = function(items, unused, query, mode, parstylename, charstylename, d) {
+var cleaner = function(d, items, unused, query, mode, parstylename, charstylename) {
   reset();
   var par = null;
   for(var p = 0; p < d.allParagraphStyles.length;p++){

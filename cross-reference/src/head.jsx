@@ -18,6 +18,7 @@
  */
 
 // ##Version history
+// 0.4.1 update to latest clener module
 // 0.4.0 using extendscript_modules
 // 0.3.0 only clean up the ones that are really used
 // 0.2.0 creates report

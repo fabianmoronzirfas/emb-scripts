@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! image-reference.jsx - v0.3.2 - 2015-03-23 */
+/*! image-reference.jsx - v0.4.2 - 2015-03-23 */
 /*
  * image-reference.jsx
  * creates hyperlinks from patterns
@@ -32,6 +32,8 @@
  */
 
 // ##Version history
+// 0.4.0 DRY code
+// 0.3.2 get the right par and char styles
 // 0.3.1 removed minor bug wroung unused references
 // 0.3.0 works
 // 0.2.0 using extendscript_modules
@@ -267,7 +269,7 @@ var searcher = function(d, queryname, querymode) {
  * @param  {Document}                d      the current doc to work on
  * @return {nothing}
  */
-var cleaner = function(items, unused, query, mode, parstylename, charstylename, d) {
+var cleaner = function(d, items, unused, query, mode, parstylename, charstylename) {
   reset();
   var par = null;
   for(var p = 0; p < d.allParagraphStyles.length;p++){
@@ -483,24 +485,18 @@ var hyperlinker = function(d, data, slice, prefix) {
  * @return {nothing}
  */
 var main = function() {
-  trainer(settings.queries[0].source);
-  if (DEBUG) {
-    $.writeln("Trained first source");
-  }
-  trainer(settings.queries[0].target);
-  if (DEBUG) {
-    $.writeln("Trained first target");
-  }
 
-  trainer(settings.queries[1].source);
-  if (DEBUG) {
-    $.writeln("Trained secound source");
-  }
-  trainer(settings.queries[1].target);
-  if (DEBUG) {
-    $.writeln("Trained secound target");
-  }
+  for (var t = 0; t < settings.queries.length; t++) {
+    trainer(settings.queries[t].source);
+    if (DEBUG) {
+      $.writeln("Trained source for query No " + (t + 1));
+    }
 
+    trainer(settings.queries[t].target);
+    if (DEBUG) {
+      $.writeln("Trained target for query No " + (t + 1));
+    }
+  }
 
   if (app.documents.length > 0) {
     var doc = app.activeDocument;
@@ -527,97 +523,89 @@ var main = function() {
     var slice = [{
       "src": 3,
       "tgt": 2
-    },{
+    }, {
       "src": 2,
       "tgt": 2
     }];
 
-    for(var q = 0; q < settings.queries.length;q++){
-      sources.push(searcher(doc, settings.queries[q].source.fcquery, settings.queries[q].source.mode));
-      targets.push(searcher(doc, settings.queries[q].target.fcquery, settings.queries[q].target.mode));
-    data.push({
-      "src": sources[q],
-      "tgt": targets[q]
+    for (var q = 0; q < settings.queries.length; q++) {
+      sources.push(
+        searcher(
+          doc,
+          settings.queries[q].source.fcquery,
+          settings.queries[q].source.mode
+        )
+      );
+      targets.push(
+        searcher(
+          doc,
+          settings.queries[q].target.fcquery,
+          settings.queries[q].target.mode
+        )
+      );
+      data.push({
+        "src": sources[q],
+        "tgt": targets[q]
       });
-    if (DEBUG) {
-      $.writeln(data[q].src.length + " " + data[q].tgt.length);
+      if (DEBUG) {
+        $.writeln(data[q].src.length + " " + data[q].tgt.length);
+      }
+
+      var prefix = settings.hyperlinks.prefix + settings.queries[q].prefix;
+
+      results.push(
+        hyperlinker(
+          doc,
+          data[q],
+          slice[q],
+          prefix
+        )
+      );
+
+      if (DEBUG) {
+        $.writeln(results[q].toSource());
+      }
+      if (DEBUG) {
+        $.writeln("Running search and hyperlink build No: " + (q + 1) + "\n------------------------");
+      }
     }
-    var prefix = settings.hyperlinks.prefix + settings.queries[q].prefix;
-    results.push(hyperlinker(doc, data[q], slice[q], prefix));
-    if (DEBUG) {
-      $.writeln(results[q].toSource());
-    }
-    if (DEBUG) {
-      $.writeln("Running search and hyperlink build No: "+ (q+1) +"\n------------------------");
-    }
-    }
-    // var sources_first =
-
-    // var targets_first = ;
-
-
-
-
-    // var result_first_run = ;
-
-
-    //second run
-
-    // var sources_second = searcher(doc, settings.queries[1].source.fcquery, settings.queries[1].source.mode);
-    // var targets_second = searcher(doc, settings.queries[1].target.fcquery, settings.queries[1].target.mode);
-
-    // data.push({
-    //   "src": sources_second,
-    //   "tgt": targets_second
-    // });
-
-
-
-    // $.writeln(data);
-    //  slice = {
-    //   "src": 2,
-    //   "tgt": 2
-    // };
-    // slice.src = 2;
-    // prefix = settings.hyperlinks.prefix + settings.queries[1].prefix;
-    // results.push(hyperlinker(doc, data[1], slice, prefix));
-
-
-    // if (DEBUG) {
-    //   $.writeln(results[1].toSource());
-    // }
-
 
     // clean up
-for(var i = 0;i < data.length;i++){
+    for (var i = 0; i < data.length; i++) {
 
-    cleaner(
-      data[i].src,
-      results[i].unused_sources,
-      settings.queries[i].source.fcquery,
-      settings.queries[i].source.mode,
-      null,
-      settings.queries[i].source.charstyle,
-      doc
-    );
+      cleaner(
+        doc,
+        data[i].src,
+        results[i].unused_sources,
+        settings.queries[i].source.fcquery,
+        settings.queries[i].source.mode,
+        null,
+        settings.queries[i].source.charstyle
+      );
 
-    cleaner(
-      data[i].tgt,
-      results[i].unused_targets,
-      settings.queries[i].target.fcquery,
-      settings.queries[i].target.mode,
-      null,
-      settings.queries[i].target.charstyle,
-      doc
-    );
-}
+      cleaner(
+        doc,
+        data[i].tgt,
+        results[i].unused_targets,
+        settings.queries[i].target.fcquery,
+        settings.queries[i].target.mode,
+        null,
+        settings.queries[i].target.charstyle
+      );
+    }
 
     var str = "#Overview: " + del +
       "Found: " + del + "Sources: " + data[0].src.length + del + "Targets: " + data[0].tgt.length + del + del + "Sources: " + data[1].src.length + del + "Targets: " + data[1].tgt.length + del + del;
 
     var line = del + "---------------------------------" + del;
-    var res = str + results[0].unused_src_report + del + results[0].unused_tgt_report + line + del;
-    res += results[1].unused_src_report + del + results[1].unused_tgt_report + line + del + results[0].report + results[1].report;
+    var res = str +
+      results[0].unused_src_report + del +
+      results[0].unused_tgt_report + line + del;
+
+    res += results[1].unused_src_report + del +
+      results[1].unused_tgt_report + line + del +
+      results[0].report + results[1].report;
+
     logger(doc, res);
 
   } else {

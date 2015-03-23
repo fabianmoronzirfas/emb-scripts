@@ -29,6 +29,8 @@
  */
 
 // ##Version history
+// 0.4.0 DRY code
+// 0.3.2 get the right par and char styles
 // 0.3.1 removed minor bug wroung unused references
 // 0.3.0 works
 // 0.2.0 using extendscript_modules

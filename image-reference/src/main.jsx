@@ -40,67 +40,76 @@ var main = function() {
     if (DEBUG) {
       $.writeln("Running first search and hyperlink build\n------------------------");
     }
-    var sources_first = searcher(doc, settings.queries[0].source.fcquery, settings.queries[0].source.mode);
-
-    var targets_first = searcher(doc, settings.queries[0].target.fcquery, settings.queries[0].target.mode);
-
-    var data = [{
-      "src": sources_first,
-      "tgt": targets_first
-    }];
-
-    if (DEBUG) {
-      $.writeln(data[0].src.length + " " + data[0].tgt.length);
-    }
-
-
+    var results = [];
+    var data = [];
+    var sources = [];
+    var targets = [];
     var del = settings.delimiter;
-    var slice = {
+    var slice = [{
       "src": 3,
       "tgt": 2
-    };
-    var prefix = settings.hyperlinks.prefix + settings.queries[0].prefix;
-    var results = [];
-    results.push(hyperlinker(doc, data[0], slice, prefix));
-    // var result_first_run = ;
-    if (DEBUG) {
-      $.writeln(results[0].toSource());
-    }
+    },{
+      "src": 2,
+      "tgt": 2
+    }];
 
+    for(var q = 0; q < settings.queries.length;q++){
+      sources.push(searcher(doc, settings.queries[q].source.fcquery, settings.queries[q].source.mode));
+      targets.push(searcher(doc, settings.queries[q].target.fcquery, settings.queries[q].target.mode));
+    data.push({
+      "src": sources[q],
+      "tgt": targets[q]
+      });
     if (DEBUG) {
-      $.writeln("Running second search and hyperlink build\n------------------------");
+      $.writeln(data[q].src.length + " " + data[q].tgt.length);
     }
+    var prefix = settings.hyperlinks.prefix + settings.queries[q].prefix;
+    results.push(hyperlinker(doc, data[q], slice[q], prefix));
+    if (DEBUG) {
+      $.writeln(results[q].toSource());
+    }
+    if (DEBUG) {
+      $.writeln("Running search and hyperlink build No: "+ (q+1) +"\n------------------------");
+    }
+    }
+    // var sources_first =
+
+    // var targets_first = ;
+
+
+
+
+    // var result_first_run = ;
+
 
     //second run
 
-    var sources_second = searcher(doc, settings.queries[1].source.fcquery, settings.queries[1].source.mode);
-    var targets_second = searcher(doc, settings.queries[1].target.fcquery, settings.queries[1].target.mode);
+    // var sources_second = searcher(doc, settings.queries[1].source.fcquery, settings.queries[1].source.mode);
+    // var targets_second = searcher(doc, settings.queries[1].target.fcquery, settings.queries[1].target.mode);
 
-    data.push({
-      "src": sources_second,
-      "tgt": targets_second
-    });
+    // data.push({
+    //   "src": sources_second,
+    //   "tgt": targets_second
+    // });
 
-    if (DEBUG) {
-      $.writeln(data[1].src.length + " " + data[1].tgt.length);
-    }
+
 
     // $.writeln(data);
     //  slice = {
     //   "src": 2,
     //   "tgt": 2
     // };
-    slice.src = 2;
-    prefix = settings.hyperlinks.prefix + settings.queries[1].prefix;
-    results.push(hyperlinker(doc, data[1], slice, prefix));
+    // slice.src = 2;
+    // prefix = settings.hyperlinks.prefix + settings.queries[1].prefix;
+    // results.push(hyperlinker(doc, data[1], slice, prefix));
 
 
-    if (DEBUG) {
-      $.writeln(results[1].toSource());
-    }
+    // if (DEBUG) {
+    //   $.writeln(results[1].toSource());
+    // }
 
 
-    // clean up first
+    // clean up
 for(var i = 0;i < data.length;i++){
 
     cleaner(
@@ -123,28 +132,6 @@ for(var i = 0;i < data.length;i++){
       doc
     );
 }
-
-
-
-    // cleaner(
-    //   data[1].src,
-    //   result_second_run.unused_sources,
-    //   settings.queries[1].source.fcquery,
-    //   settings.queries[1].source.mode,
-    //   null,
-    //   settings.queries[1].source.charstyle,
-    //   doc
-    // );
-
-    // cleaner(
-    //   data[1].tgt,
-    //   result_second_run.unused_targets,
-    //   settings.queries[1].target.fcquery,
-    //   settings.queries[1].target.mode,
-    //   null,
-    //   settings.queries[1].target.charstyle,
-    //   doc
-    // );
 
     var str = "#Overview: " + del +
       "Found: " + del + "Sources: " + data[0].src.length + del + "Targets: " + data[0].tgt.length + del + del + "Sources: " + data[1].src.length + del + "Targets: " + data[1].tgt.length + del + del;

@@ -13,6 +13,12 @@
  *
  * ||NumberName Number||
  *
+ * e.g.
+ *
+ * ##(1Abb. 1)## -- to --> ##1Abb. 1## -- to --> ||1Abb. 1||
+ *
+ *
+ *
  *
  * it creates its own find change grep query if necessary and executes it
  *

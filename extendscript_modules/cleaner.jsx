@@ -4,10 +4,33 @@
  * @param  {Array of Boolean}        unused Coresponds with the items array if true the element was used
  * @param  {String}                  query  Name of the FindChange query to use
  * @param  {SearchModes.grepSearch}  mode   The type of the FC query
+ * @param  {Document}                d      the current doc to work on
  * @return {nothing}
  */
-var cleaner = function(items, unused, query, mode, parstyle, charstyle) {
+var cleaner = function(items, unused, query, mode, parstylename, charstylename, d) {
   reset();
+  var par = null;
+  for(var p = 0; p < d.allParagraphStyles.length;p++){
+    if(parstylename == d.allParagraphStyles[p].name){
+      par = d.allparagraphstyles[p];
+      if(DEBUG){$.writeln("got the right par style: " + par.name);}
+      break;
+    }
+  }
+
+  if(DEBUG === true && par === null){$.writeln("could not find the parstyle with the name " + parstylename);}
+
+  var cha = null;
+  for(var c = 0; c < d.allCharacterStyles.length;c++){
+    if(charstylename == d.allCharacterStyles[c].name){
+      cha = d.allCharacterStyles[c];
+      if(DEBUG){$.writeln("got the right char style: " + cha.name);}
+      break;
+    }
+  }
+
+  if(DEBUG === true && cha === null){$.writeln("could not find the charstyle with the name " + charstylename);}
+
   app.loadFindChangeQuery(query, mode);
   for (var i = 0; i < items.length; i++) {
     if (DEBUG) {
@@ -26,12 +49,12 @@ var cleaner = function(items, unused, query, mode, parstyle, charstyle) {
       if (DEBUG) {
         $.writeln("clean up " + items[i].contents);
       }
-      if(parstyle !== null){
-        app.changeGrepPreferences.appliedParagraphStyle = app.activeDocument.paragraphStyles.item( parstyle);
+      if(par !== null){
+        app.changeGrepPreferences.appliedParagraphStyle = par;
       }
 
-      if(charstyle !== null){
-        app.changeGrepPreferences.appliedCharacterStyle = app.activeDocument.characterStyles.item( charstyle);
+      if(cha !== null){
+        app.changeGrepPreferences.appliedCharacterStyle = cha;
       }
 
       items[i].changeGrep();

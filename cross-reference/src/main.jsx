@@ -19,14 +19,15 @@ var main = function() {
       alert("Your document was never saved.\nPlease save it at least once so I can create the log file for you. Aborting script execution ");
       return;
     }
+
     if (doc.modified === true) {
       var saveit = confirm("Your document was modified before the script execution. Do you want me to save these changes before proceeding? ");
       if (saveit === true) {
         doc.save();
       }
     }
-    var sources = searcher(doc, settings.source.fcquery, settings.source.mode);
-    var targets = searcher(doc, settings.target.fcquery, settings.target.mode);
+    var sources = searcher(doc, settings.source.fcquery, settings.source.mode, null, null);
+    var targets = searcher(doc, settings.target.fcquery, settings.target.mode, null, null);
 
     var data = {
       "src": sources,
@@ -42,8 +43,8 @@ var main = function() {
     var result = hyperlinker(doc, data);
     var str = "#Overview: " + del + "Found: " + del + "Sources: " + data.src.length + del + "Targets: " + data.tgt.length + del + del;
 
-    cleaner(data.src, result.unused_sources, settings.source.fcquery, settings.source.mode, null, null);
-    cleaner(data.tgt, result.unused_targets, settings.target.fcquery, settings.target.mode, null, null);
+    cleaner(data.src, result.unused_sources, settings.source.fcquery, settings.source.mode,null,null);
+    cleaner(data.tgt, result.unused_targets, settings.target.fcquery, settings.target.mode,null,null);
     var line = del + "---------------------------------" + del;
     logger(doc, str + result.unused_src_report + del + result.unused_tgt_report + line + del + result.report);
 

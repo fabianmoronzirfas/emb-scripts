@@ -37,8 +37,11 @@ var main = function() {
     }
     // first run
 
-    if(DEBUG){$.writeln("Running first search and hyperlink build\n------------------------");}
+    if (DEBUG) {
+      $.writeln("Running first search and hyperlink build\n------------------------");
+    }
     var sources_first = searcher(doc, settings.queries[0].source.fcquery, settings.queries[0].source.mode);
+
     var targets_first = searcher(doc, settings.queries[0].target.fcquery, settings.queries[0].target.mode);
 
     var data = [{
@@ -57,14 +60,18 @@ var main = function() {
       "tgt": 2
     };
     var prefix = settings.hyperlinks.prefix + settings.queries[0].prefix;
-    var result_first_run = hyperlinker(doc, data[0], slice, prefix );
-    if(DEBUG){$.writeln(result_first_run.toSource());}
+    var result_first_run = hyperlinker(doc, data[0], slice, prefix);
+    if (DEBUG) {
+      $.writeln(result_first_run.toSource());
+    }
 
-    if(DEBUG){$.writeln("Running second search and hyperlink build\n------------------------");}
+    if (DEBUG) {
+      $.writeln("Running second search and hyperlink build\n------------------------");
+    }
 
     //second run
 
-   var sources_second = searcher(doc, settings.queries[1].source.fcquery, settings.queries[1].source.mode);
+    var sources_second = searcher(doc, settings.queries[1].source.fcquery, settings.queries[1].source.mode);
     var targets_second = searcher(doc, settings.queries[1].target.fcquery, settings.queries[1].target.mode);
 
     data.push({
@@ -86,7 +93,9 @@ var main = function() {
     var result_second_run = hyperlinker(doc, data[1], slice, prefix);
 
 
-    if(DEBUG){$.writeln(result_second_run.toSource());}
+    if (DEBUG) {
+      $.writeln(result_second_run.toSource());
+    }
 
 
     // clean up first
@@ -96,41 +105,49 @@ var main = function() {
       result_first_run.unused_sources,
       settings.queries[0].source.fcquery,
       settings.queries[0].source.mode,
-      settings.queries[0].source.parstyle,
-      settings.queries[0].source.charstyle);
+      null,
+      settings.queries[0].source.charstyle,
+      doc
+    );
 
     cleaner(
       data[0].tgt,
       result_first_run.unused_targets,
       settings.queries[0].target.fcquery,
       settings.queries[0].target.mode,
-      settings.queries[0].target.parstyle,
-      settings.queries[0].target.charstyle);
+      null,
+      settings.queries[0].target.charstyle,
+      doc
+    );
 
 
-cleaner(
+    cleaner(
       data[1].src,
       result_second_run.unused_sources,
       settings.queries[1].source.fcquery,
       settings.queries[1].source.mode,
-      settings.queries[1].source.parstyle,
-      settings.queries[1].source.charstyle);
+      null,
+      settings.queries[1].source.charstyle,
+      doc
+    );
 
 
-cleaner(
+    cleaner(
       data[1].tgt,
       result_second_run.unused_targets,
       settings.queries[1].target.fcquery,
       settings.queries[1].target.mode,
-      settings.queries[1].target.parstyle,
-      settings.queries[1].target.charstyle);
+      null,
+      settings.queries[1].target.charstyle,
+      doc
+    );
 
     var str = "#Overview: " + del +
-     "Found: " + del + "Sources: " + data[0].src.length + del + "Targets: " + data[0].tgt.length + del + del + "Sources: " + data[1].src.length + del + "Targets: " + data[1].tgt.length + del + del;
+      "Found: " + del + "Sources: " + data[0].src.length + del + "Targets: " + data[0].tgt.length + del + del + "Sources: " + data[1].src.length + del + "Targets: " + data[1].tgt.length + del + del;
 
     var line = del + "---------------------------------" + del;
-    var res = str + result_first_run.unused_src_report + del + result_first_run.unused_tgt_report + line + del ;
-    res += result_second_run.unused_src_report + del + result_second_run.unused_tgt_report + line + del + result_first_run.report +  result_second_run.report;
+    var res = str + result_first_run.unused_src_report + del + result_first_run.unused_tgt_report + line + del;
+    res += result_second_run.unused_src_report + del + result_second_run.unused_tgt_report + line + del + result_first_run.report + result_second_run.report;
     logger(doc, res);
 
   } else {

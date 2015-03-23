@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! image-reference.jsx - v0.3.1 - 2015-03-20 */
+/*! image-reference.jsx - v0.3.2 - 2015-03-23 */
 /*
  * image-reference.jsx
  * creates hyperlinks from patterns
@@ -15,6 +15,12 @@
  * it also connects the targets from process one to
  *
  * ||NumberName Number||
+ *
+ * e.g.
+ *
+ * ##(1Abb. 1)## -- to --> ##1Abb. 1## -- to --> ||1Abb. 1||
+ *
+ *
  *
  *
  * it creates its own find change grep query if necessary and executes it
@@ -238,6 +244,7 @@ var searcher = function(d, queryname, querymode) {
   app.loadFindChangeQuery(queryname, querymode);
   var result = d.findGrep();
 
+
   // var report = "Sources:\n";
   // for (var i = 0; i < sources.length; i++) {
   //   report += sources[i].contents;
@@ -257,10 +264,33 @@ var searcher = function(d, queryname, querymode) {
  * @param  {Array of Boolean}        unused Coresponds with the items array if true the element was used
  * @param  {String}                  query  Name of the FindChange query to use
  * @param  {SearchModes.grepSearch}  mode   The type of the FC query
+ * @param  {Document}                d      the current doc to work on
  * @return {nothing}
  */
-var cleaner = function(items, unused, query, mode, parstyle, charstyle) {
+var cleaner = function(items, unused, query, mode, parstylename, charstylename, d) {
   reset();
+  var par = null;
+  for(var p = 0; p < d.allParagraphStyles.length;p++){
+    if(parstylename == d.allParagraphStyles[p].name){
+      par = d.allparagraphstyles[p];
+      if(DEBUG){$.writeln("got the right par style: " + par.name);}
+      break;
+    }
+  }
+
+  if(DEBUG === true && par === null){$.writeln("could not find the parstyle with the name " + parstylename);}
+
+  var cha = null;
+  for(var c = 0; c < d.allCharacterStyles.length;c++){
+    if(charstylename == d.allCharacterStyles[c].name){
+      cha = d.allCharacterStyles[c];
+      if(DEBUG){$.writeln("got the right char style: " + cha.name);}
+      break;
+    }
+  }
+
+  if(DEBUG === true && cha === null){$.writeln("could not find the charstyle with the name " + charstylename);}
+
   app.loadFindChangeQuery(query, mode);
   for (var i = 0; i < items.length; i++) {
     if (DEBUG) {
@@ -279,12 +309,12 @@ var cleaner = function(items, unused, query, mode, parstyle, charstyle) {
       if (DEBUG) {
         $.writeln("clean up " + items[i].contents);
       }
-      if(parstyle !== null){
-        app.changeGrepPreferences.appliedParagraphStyle = app.activeDocument.paragraphStyles.item( parstyle);
+      if(par !== null){
+        app.changeGrepPreferences.appliedParagraphStyle = par;
       }
 
-      if(charstyle !== null){
-        app.changeGrepPreferences.appliedCharacterStyle = app.activeDocument.characterStyles.item( charstyle);
+      if(cha !== null){
+        app.changeGrepPreferences.appliedCharacterStyle = cha;
       }
 
       items[i].changeGrep();
@@ -486,8 +516,11 @@ var main = function() {
     }
     // first run
 
-    if(DEBUG){$.writeln("Running first search and hyperlink build\n------------------------");}
+    if (DEBUG) {
+      $.writeln("Running first search and hyperlink build\n------------------------");
+    }
     var sources_first = searcher(doc, settings.queries[0].source.fcquery, settings.queries[0].source.mode);
+
     var targets_first = searcher(doc, settings.queries[0].target.fcquery, settings.queries[0].target.mode);
 
     var data = [{
@@ -506,14 +539,18 @@ var main = function() {
       "tgt": 2
     };
     var prefix = settings.hyperlinks.prefix + settings.queries[0].prefix;
-    var result_first_run = hyperlinker(doc, data[0], slice, prefix );
-    if(DEBUG){$.writeln(result_first_run.toSource());}
+    var result_first_run = hyperlinker(doc, data[0], slice, prefix);
+    if (DEBUG) {
+      $.writeln(result_first_run.toSource());
+    }
 
-    if(DEBUG){$.writeln("Running second search and hyperlink build\n------------------------");}
+    if (DEBUG) {
+      $.writeln("Running second search and hyperlink build\n------------------------");
+    }
 
     //second run
 
-   var sources_second = searcher(doc, settings.queries[1].source.fcquery, settings.queries[1].source.mode);
+    var sources_second = searcher(doc, settings.queries[1].source.fcquery, settings.queries[1].source.mode);
     var targets_second = searcher(doc, settings.queries[1].target.fcquery, settings.queries[1].target.mode);
 
     data.push({
@@ -535,7 +572,9 @@ var main = function() {
     var result_second_run = hyperlinker(doc, data[1], slice, prefix);
 
 
-    if(DEBUG){$.writeln(result_second_run.toSource());}
+    if (DEBUG) {
+      $.writeln(result_second_run.toSource());
+    }
 
 
     // clean up first
@@ -545,41 +584,49 @@ var main = function() {
       result_first_run.unused_sources,
       settings.queries[0].source.fcquery,
       settings.queries[0].source.mode,
-      settings.queries[0].source.parstyle,
-      settings.queries[0].source.charstyle);
+      null,
+      settings.queries[0].source.charstyle,
+      doc
+    );
 
     cleaner(
       data[0].tgt,
       result_first_run.unused_targets,
       settings.queries[0].target.fcquery,
       settings.queries[0].target.mode,
-      settings.queries[0].target.parstyle,
-      settings.queries[0].target.charstyle);
+      null,
+      settings.queries[0].target.charstyle,
+      doc
+    );
 
 
-cleaner(
+    cleaner(
       data[1].src,
       result_second_run.unused_sources,
       settings.queries[1].source.fcquery,
       settings.queries[1].source.mode,
-      settings.queries[1].source.parstyle,
-      settings.queries[1].source.charstyle);
+      null,
+      settings.queries[1].source.charstyle,
+      doc
+    );
 
 
-cleaner(
+    cleaner(
       data[1].tgt,
       result_second_run.unused_targets,
       settings.queries[1].target.fcquery,
       settings.queries[1].target.mode,
-      settings.queries[1].target.parstyle,
-      settings.queries[1].target.charstyle);
+      null,
+      settings.queries[1].target.charstyle,
+      doc
+    );
 
     var str = "#Overview: " + del +
-     "Found: " + del + "Sources: " + data[0].src.length + del + "Targets: " + data[0].tgt.length + del + del + "Sources: " + data[1].src.length + del + "Targets: " + data[1].tgt.length + del + del;
+      "Found: " + del + "Sources: " + data[0].src.length + del + "Targets: " + data[0].tgt.length + del + del + "Sources: " + data[1].src.length + del + "Targets: " + data[1].tgt.length + del + del;
 
     var line = del + "---------------------------------" + del;
-    var res = str + result_first_run.unused_src_report + del + result_first_run.unused_tgt_report + line + del ;
-    res += result_second_run.unused_src_report + del + result_second_run.unused_tgt_report + line + del + result_first_run.report +  result_second_run.report;
+    var res = str + result_first_run.unused_src_report + del + result_first_run.unused_tgt_report + line + del;
+    res += result_second_run.unused_src_report + del + result_second_run.unused_tgt_report + line + del + result_first_run.report + result_second_run.report;
     logger(doc, res);
 
   } else {

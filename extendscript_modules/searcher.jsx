@@ -9,6 +9,7 @@ var searcher = function(d, queryname, querymode) {
   app.loadFindChangeQuery(queryname, querymode);
   var result = d.findGrep();
 
+
   // var report = "Sources:\n";
   // for (var i = 0; i < sources.length; i++) {
   //   report += sources[i].contents;

@@ -17,12 +17,13 @@ var formatted_time = now.getHours().toString()+ "-" + now.getMinutes().toString(
 
 
 var set_ruler = function(d){
-  var r = doc.viewPreferences.rulerOrigin;
-  doc.viewPreferences.rulerOrigin = RulerOrigin.PAGE_ORIGIN;
+  var r = d.viewPreferences.rulerOrigin;
+  d.viewPreferences.rulerOrigin = RulerOrigin.PAGE_ORIGIN;
+  return r;
 };
 
 reset_ruler = function(d, r){
-  doc.viewPreferences.rulerOrigin = r;
+  d.viewPreferences.rulerOrigin = r;
 };
 
 // http://forums.adobe.com/thread/615381
@@ -115,6 +116,8 @@ var main = function() {
           });
         }
       } // end of for stories loop
+
+
     } // end of else no story selected
     reset_ruler(doc, rulerorigin);
   } // end of doc

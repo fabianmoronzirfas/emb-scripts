@@ -3,13 +3,14 @@ var settings = {
   "linefeeds": null,
   "rewirte": true,
   "queries": [{
-    "prefix": "ToImg-",
+    "name":"Find text to table sub text",
+    "prefix": "ToTbl-",
     "source": {
-      "fcquery": "emb-in-text-source-img",
+      "fcquery": "emb-in-text-source-table",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "##\\(\\d{1,10}(.*?\\d{1,10})\\)##",
+        "findWhat": "\\$\\$\\(\\d{1,10}(.*?\\d{1,10})\\)\\$\\$",
       },
       "changeGrepPreferences": {
         "changeTo": "($1)"
@@ -18,11 +19,11 @@ var settings = {
       "charstyle": null
     },
     "target": {
-      "fcquery": "emb-in-text-target-img",
+      "fcquery": "emb-in-text-target-table",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "##\\d{1,10}(.*?\\d{1,10})##",
+        "findWhat": "\\$\\$\\d{1,10}(.*?\\d{1,10})\\$\\$",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -31,32 +32,33 @@ var settings = {
       "charstyle": null,
     }
   }, {
-    "prefix": "ToRef-",
+    "prefix": "ToTblRef-",
+    "name":"Find sub table text to table reference",
     "source": {
-      "fcquery": "emb-sub-img-txt-source-img",
+      "fcquery": "emb-sub-text-source-table",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "##\\d{1,10}(.*?\\d{1,10})##",
+        "findWhat": "\\$\\$\\d{1,10}(.*?\\d{1,10})\\$\\$",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
       },
       "parstyle": null,
-      "charstyle": "Bildlegende Abb-Nr"
+      "charstyle": null
     },
     "target": {
-      "fcquery": "emb-img-ref-target-img",
+      "fcquery": "emb-sub-text-target-table",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\|\\|\\d{1,10}.*?(\\d{1,10})\\|\\|",
+        "findWhat": "==\\d{1,10}.*?(\\d{1,10})==",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
       },
       "parstyle": null,
-      "charstyle": "Bildnachweis Abb-Nr"
+      "charstyle": null
     }
   }],
   "hyperlinks": {

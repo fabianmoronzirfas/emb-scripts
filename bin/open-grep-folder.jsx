@@ -1,0 +1,1 @@
+﻿var grepfolder = Folder(app.scriptPreferences.scriptsFolder.parent.parent.fsName + "/Find-Change Queries/Grep/");if(grepfolder.exists){     grepfolder.execute();       }

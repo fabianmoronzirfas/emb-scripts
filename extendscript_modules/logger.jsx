@@ -7,6 +7,10 @@
  */
 var logger = function(d, str) {
   var del = settings.delimiter;
+  var folder = Folder(d.filePath + "/script-logs");
+  if(folder.exists !== true){
+    folder.create();
+  }
   var path = d.filePath + "/log." + File($.fileName).name + " " + formatted_date + " " + formatted_time + ".txt";
   if (DEBUG) {
     $.writeln(path);

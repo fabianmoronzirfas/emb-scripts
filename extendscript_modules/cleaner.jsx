@@ -64,3 +64,8 @@ var cleaner = function(d, items, unused, query, mode, parstylename, charstylenam
   }
   // d.changeGrep();
 };
+
+var string_cleaner = function(str){
+  var result = str.replace(/\s/g, " ");
+  return result;
+};

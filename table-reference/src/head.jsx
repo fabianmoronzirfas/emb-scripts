@@ -1,5 +1,5 @@
 /*
- * image-reference.jsx
+ * table-reference.jsx
  * creates hyperlinks from patterns
  * currently the pattern is for the sources
  *
@@ -29,13 +29,7 @@
  */
 
 // ##Version history
-// 0.4.2 works
-// 0.4.1 logger creates folder
-// 0.4.0 DRY code
-// 0.3.2 get the right par and char styles
-// 0.3.1 removed minor bug wroung unused references
-// 0.3.0 works
-// 0.2.0 using extendscript_modules
-// 0.1.0 initial version based on cross-reference.jsx
+// 0.2.0 works fine
+// 0.1.0 initial version based on image-reference.jsx
 //
 

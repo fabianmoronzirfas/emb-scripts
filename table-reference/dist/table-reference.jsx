@@ -1,8 +1,8 @@
 (function(thisObj) {
 
-/*! image-reference.jsx - v0.4.2 - 2015-03-24 */
+/*! table-reference.jsx - v0.2.0 - 2015-03-24 */
 /*
- * image-reference.jsx
+ * table-reference.jsx
  * creates hyperlinks from patterns
  * currently the pattern is for the sources
  *
@@ -32,14 +32,8 @@
  */
 
 // ##Version history
-// 0.4.2 works
-// 0.4.1 logger creates folder
-// 0.4.0 DRY code
-// 0.3.2 get the right par and char styles
-// 0.3.1 removed minor bug wroung unused references
-// 0.3.0 works
-// 0.2.0 using extendscript_modules
-// 0.1.0 initial version based on cross-reference.jsx
+// 0.2.0 works fine
+// 0.1.0 initial version based on image-reference.jsx
 //
 
 
@@ -55,13 +49,14 @@ var settings = {
   "linefeeds": null,
   "rewirte": true,
   "queries": [{
-    "prefix": "ToImg-",
+    "name":"Find text to table sub text",
+    "prefix": "ToTbl-",
     "source": {
-      "fcquery": "emb-in-text-source-img",
+      "fcquery": "emb-in-text-source-table",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "##\\(\\d{1,10}(.*?\\d{1,10})\\)##",
+        "findWhat": "\\$\\$\\(\\d{1,10}(.*?\\d{1,10})\\)\\$\\$",
       },
       "changeGrepPreferences": {
         "changeTo": "($1)"
@@ -70,11 +65,11 @@ var settings = {
       "charstyle": null
     },
     "target": {
-      "fcquery": "emb-in-text-target-img",
+      "fcquery": "emb-in-text-target-table",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "##\\d{1,10}(.*?\\d{1,10})##",
+        "findWhat": "\\$\\$\\d{1,10}(.*?\\d{1,10})\\$\\$",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -83,32 +78,33 @@ var settings = {
       "charstyle": null,
     }
   }, {
-    "prefix": "ToRef-",
+    "prefix": "ToTblRef-",
+    "name":"Find sub table text to table reference",
     "source": {
-      "fcquery": "emb-sub-img-txt-source-img",
+      "fcquery": "emb-sub-text-source-table",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "##\\d{1,10}(.*?\\d{1,10})##",
+        "findWhat": "\\$\\$\\d{1,10}(.*?\\d{1,10})\\$\\$",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
       },
       "parstyle": null,
-      "charstyle": "Bildlegende Abb-Nr"
+      "charstyle": null
     },
     "target": {
-      "fcquery": "emb-img-ref-target-img",
+      "fcquery": "emb-sub-text-target-table",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\|\\|\\d{1,10}.*?(\\d{1,10})\\|\\|",
+        "findWhat": "==\\d{1,10}.*?(\\d{1,10})==",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
       },
       "parstyle": null,
-      "charstyle": "Bildnachweis Abb-Nr"
+      "charstyle": null
     }
   }],
   "hyperlinks": {

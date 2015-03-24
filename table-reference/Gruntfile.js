@@ -10,7 +10,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
     meta: {
-      version: "0.2.0"
+      version: "0.1.0"
     },
 
     concat: {

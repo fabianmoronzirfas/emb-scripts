@@ -1,9 +1,48 @@
+var DEBUG = true;
+var DRYRUN = false;
 /**
  * Removes all hyperlinks, hl-sources and hl-targets currently unused
  * @param  {Document} d       the current document
  * @param  {String}   prefix  a prefix for identifiying the hyperlinks
  * @return {nothing}
  */
+
+var hl_lister = function(d, prefix) {
+  var hlsdest = d.hyperlinkTextDestinations;
+
+  for (var j = hlsdest.length - 1; j >= 0; j--) {
+    var dest = hlsdest[j];
+    if (dest.name.substring(0, prefix.length) == prefix) {
+      // dest.remove();
+      if (DEBUG) {
+        $.writeln("found link destination with prefix: " + prefix + "");
+      }
+    }
+  }
+
+  var hlssrc = d.hyperlinkTextSources;
+  for (var k = hlssrc.length - 1; k >= 0; k--) {
+    var src = hlssrc[k];
+    if (src.name.substring(0, prefix.length) == prefix) {
+      // src.remove();
+      if (DEBUG) {
+        $.writeln("found link source with prefix: " + prefix + "");
+      }
+    }
+  }
+
+  var hls = d.hyperlinks;
+  for (i = hls.length - 1; i >= 0; i--) {
+    var link = hls[i];
+    if (link.name.substring(0, prefix.length) == prefix) {
+      // link.remove();
+      if (DEBUG) {
+        $.writeln("found link with prefix: " + prefix + "");
+      }
+    }
+
+  }
+};
 var hl_destroyer = function(d, prefix) {
 
   var hlsdest = d.hyperlinkTextDestinations;
@@ -57,10 +96,10 @@ var hl_builder = function(d, data, prefix, slice) {
   var unused_sources = [];
   var unused_targets = [];
 
-  if(slice === null || slice === undefined){
+  if (slice === null || slice === undefined) {
     slice = {
-      "src":2,
-      "tgt":2
+      "src": 2,
+      "tgt": 2
     };
   }
   for (var k = 0; k < data.src.length; k++) {
@@ -73,8 +112,8 @@ var hl_builder = function(d, data, prefix, slice) {
     var tgt_has_src = false;
     // if(DEBUG) $.writeln(data.tgt[i].contents);
     var clear_tgt_content = data.tgt[i].contents.slice(slice.tgt, -slice.tgt);
-    // var clear_tgt_content = string_cleaner(tmp_tgt);
-    if(DEBUG){$.writeln(clear_tgt_content);}
+    clear_tgt_content = string_cleaner(clear_tgt_content);
+    // if(DEBUG) $.writeln(clear_content);
     report += "## " + data.tgt[i].contents + del + del;
     var dest = d.hyperlinkTextDestinations.add(data.tgt[i]);
     dest.name = prefix + clear_tgt_content + formatted_date + " " + formatted_time + padder(i, 4, "-");
@@ -83,9 +122,7 @@ var hl_builder = function(d, data, prefix, slice) {
     for (var j = 0; j < data.src.length; j++) {
       // var src_has_tgt = false;
       var clear_src_content = data.src[j].contents.slice(slice.src, -slice.src);
-      // var clear_src_content = string_cleaner(tmp_src);
-      if(DEBUG){$.writeln(clear_src_content);}
-
+      clear_tgt_content = string_cleaner(clear_src_content);
       if (clear_src_content == clear_tgt_content) {
         tgt_has_src = true;
         // src_has_tgt = true;
@@ -142,7 +179,7 @@ var hyperlinker = function(d, data, slice, prefix) {
   // TODO Give new Hyperlinks names so I can identify them as mine
   // remove all existing hyperlinks
   // d.hyperlinks.everyItem().remove();
-  if(prefix === null || prefix === undefined){
+  if (prefix === null || prefix === undefined) {
     prefix = settings.hyperlinks.prefix;
   }
   // remove links created by script
@@ -154,3 +191,40 @@ var hyperlinker = function(d, data, slice, prefix) {
 
   return res;
 };
+
+
+var main = function() {
+  if (app.documents.length < 1) {
+    return "no doc";
+  } else {
+    var dlg = app.dialogs.add({
+      name: "Hyperlink cleaner",
+      canCancel: true
+    });
+
+    var colmn = dlg.dialogColumns.add();
+    var row = colmn.dialogRows.add();
+    row.staticTexts.add({
+      staticLabel: "run without changes:"
+    });
+    var drycheck = row.checkboxControls .add({
+      checkedState: DRYRUN,
+      });
+    if(dlg.show() === true){
+      DRYRUN = drycheck.checkedState;
+    if (DEBUG) {
+      $.writeln("starting analysis");
+    }
+    var doc = app.documents[0];
+    var _prefix = "LYNK-";
+    hl_lister(doc, _prefix);
+    if (DRYRUN !== true) {
+      hl_destroyer(doc, _prefix);
+    }
+    }else{
+      if(DEBUG){$.writeln("UI aborted by user");}
+    }
+  }
+};
+
+main();

@@ -11,7 +11,7 @@ var logger = function(d, str) {
   if(folder.exists !== true){
     folder.create();
   }
-  var path = d.filePath + "/log." + File($.fileName).name + " " + formatted_date + " " + formatted_time + ".txt";
+  var path = folder.fsName + "/log." + File($.fileName).name + " " + formatted_date + " " + formatted_time + ".txt";
   if (DEBUG) {
     $.writeln(path);
   }

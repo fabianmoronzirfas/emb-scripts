@@ -3,6 +3,7 @@
  * @type {Object}
  */
 var settings = {
+  "jumptotext":true,
   "delimiter": null,
   "linefeeds": null,
   "rewirte": true,

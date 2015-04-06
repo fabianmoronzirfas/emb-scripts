@@ -29,6 +29,7 @@
  */
 
 // ##Version history
+// 0.2.1 added jumptotext or not
 // 0.2.0 works fine
 // 0.1.0 initial version based on image-reference.jsx
 //

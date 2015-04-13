@@ -5,18 +5,31 @@
  * Then run `grunt`.
  */
 module.exports = function(grunt) {
-  'use strict';
+  "use strict";
+  require("load-grunt-tasks")(grunt);
 
   grunt.initConfig({
     hub: {
       all: {
-        src: ['*/Gruntfile.js'],
-        tasks: ['build'],
+        src: ["*/Gruntfile.js"],
+        tasks: ["build"],
       },
     },
+    copy: {
+      main: {
+        files: [
+          // includes files within path
+          {
+            expand: true,
+            src: ["*/zips/*"],
+            dest: "release/",
+            filter: "isFile",
+            flatten: true,
+          }
+        ]
+      }
+    }
   });
 
-  grunt.loadNpmTasks('grunt-hub');
-
-  grunt.registerTask('default', ['hub']);
+  grunt.registerTask("default", ["hub","copy:main"]);
 };

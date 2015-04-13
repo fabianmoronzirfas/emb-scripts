@@ -25,6 +25,7 @@ module.exports = function(grunt) {
         "src/head.jsx",
         "src/globals.jsx",
         "src/settings.jsx",
+        "../extendscript_modules/reseter.jsx",
         "src/ruler.jsx",
         "src/pages.jsx",
         "src/stories.jsx",
@@ -57,7 +58,7 @@ module.exports = function(grunt) {
       },
     },
     watch: {
-      files: ["src/*.jsx", "src/*.js", "src/lib/*"],
+      files: ["src/*.jsx", "src/*.js", "src/lib/*","../extendscript_modules/*"],
       tasks: ["concat:scripts", "wrap:script","copy:script"]
     },
     markdown: {

@@ -1,0 +1,1 @@
+﻿var main = function (){var doc = app.activeDocument;var story = doc.selection[0];for(var i = 0; i < story.footnotes.length;i++){  $.writeln(story.footnotes[i].storyOffset.texts[0].contents);//~   $.writeln(story.footnotes[i].texts[0].contents);}};main();

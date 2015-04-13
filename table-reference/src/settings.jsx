@@ -1,5 +1,5 @@
 var settings = {
-    "jumptotext":false,
+    "jumptotext":true,
   "delimiter": null,
   "linefeeds": null,
   "rewirte": true,

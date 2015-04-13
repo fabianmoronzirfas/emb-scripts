@@ -2,7 +2,7 @@ var find_stories = function(d) {
     var array = [];
     // no selection: return all stories
     if(app.selection.length === 0) {
-        return null;//doc.stories.everyItem().getElements();
+        return d.stories.everyItem().getElements();
     } else {
         try {
 

@@ -6,15 +6,15 @@
  * creates hyperlinks from patterns
  * currently the pattern is for the sources
  *
- *  ##(NumberAbb. Number)##
+ *  $$(NumberAbb. Number)$$
  *
  * for the targets
  *
- * ##NumberName Number##
+ * $$NumberName Number$$
  *
  * it also connects the targets from process one to
  *
- * ||NumberName Number||
+ * ==NumberName Number==
  *
  * e.g.
  *
@@ -46,7 +46,7 @@ var formatted_date = now.getUTCFullYear().toString() + "-" + (now.getUTCMonth() 
 var formatted_time = now.getHours().toString()+ "-" + now.getMinutes().toString() + "-" +now.getSeconds().toString();
 
 var settings = {
-    "jumptotext":false,
+    "jumptotext":true,
   "delimiter": null,
   "linefeeds": null,
   "rewirte": true,

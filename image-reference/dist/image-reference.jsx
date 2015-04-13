@@ -53,7 +53,7 @@ var formatted_time = now.getHours().toString()+ "-" + now.getMinutes().toString(
 
 
 var settings = {
-  "jumptotext":false,
+  "jumptotext":true,
   "delimiter": null,
   "linefeeds": null,
   "rewirte": true,

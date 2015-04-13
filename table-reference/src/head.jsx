@@ -3,15 +3,15 @@
  * creates hyperlinks from patterns
  * currently the pattern is for the sources
  *
- *  ##(NumberAbb. Number)##
+ *  $$(NumberAbb. Number)$$
  *
  * for the targets
  *
- * ##NumberName Number##
+ * $$NumberName Number$$
  *
  * it also connects the targets from process one to
  *
- * ||NumberName Number||
+ * ==NumberName Number==
  *
  * e.g.
  *

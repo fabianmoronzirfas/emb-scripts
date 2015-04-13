@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! image-reference.jsx - v0.4.3 - 2015-04-06 */
+/*! image-reference.jsx - v0.4.3 - 2015-04-13 */
 /*
  * image-reference.jsx
  * creates hyperlinks from patterns
@@ -147,9 +147,13 @@ if($.os.substring(0,1) == "M"){
 var reset = function() {
   // now empty the find what field!!!thats important!!!
   app.findGrepPreferences = NothingEnum.nothing;
+  app.findTextPreferences = NothingEnum.nothing;
+
   // empts the change to field!!!thats important!!!
   app.changeGrepPreferences = NothingEnum.nothing;
+  app.findTextPreferences = NothingEnum.nothing;
 };
+
 
 /**
  * [padder description]

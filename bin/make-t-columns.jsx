@@ -1,0 +1,1 @@
+﻿var doc = app.activeDocument;var sel = doc.selection[0];for(var i = 0; i < sel.parentStory.textContainers.length;i++){    var tf = sel.parentStory.textContainers[i];    tf.textFramePreferences.textColumnCount = 2;    }

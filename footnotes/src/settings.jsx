@@ -1,3 +1,5 @@
 var settings = {
-  continuousNumbering :false
+  "continuousNumbering" :false,
+  "doFootnotesStory":true,
+  "footnoteNumberStyle":"Fussnotenziffer unten"
 };

@@ -2,7 +2,9 @@ var find_stories = function(d) {
     var array = [];
     // no selection: return all stories
     if(app.selection.length === 0) {
-        return d.stories.everyItem().getElements();
+        alert("Please select a story to work on","Convert footnotes", true);
+        exit();
+
     } else {
         try {
 

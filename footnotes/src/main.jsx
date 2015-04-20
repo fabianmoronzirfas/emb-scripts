@@ -18,6 +18,31 @@ var get_height = function(p) {
   return gb;
 };
 
+
+var get_height_2c = function(fr) {
+  try {
+
+    var polygons = fr.createOutlines(false);
+    var y2 = 0;
+
+    for (var i = 0; i < polygons.length; i++) {
+      if (polygons[i].geometricBounds[2] > y2) {
+        y2 = polygons[i].geometricBounds[2];
+      }
+    }
+    for (var j = polygons.length - 1; j >= 0; j--) {
+      polygons[j].remove();
+    }
+    return y2;
+  } catch (e) {
+    return fr.geometricBounds[2];
+  }
+};
+
+// var get_textframe_lower_bounds = function(l){
+
+//   return l.baseline;
+// };
 var frame_height_calculator = function(pars, tfgb) {
 
   var gb = null;
@@ -107,8 +132,9 @@ var frame_height_calculator = function(pars, tfgb) {
 
 var main = function() {
   var rulerorigin = null;
-  var curr_horizontalMeasurementUnits = null;
-  var curr_verticalMeasurementUnits = null;
+  var curr_units = null;
+  // var curr_horizontalMeasurementUnits = null;
+  // var curr_verticalMeasurementUnits = null;
   // get all the stories
   var stories = null;
   var footnotestyle = null;
@@ -116,11 +142,6 @@ var main = function() {
   var separator = null;
   var win = null;
   var msg = "";
-  var gutter = 5;
-  var x = gutter;
-  var y = gutter;
-  var w = 300 - (gutter);
-  var h = 15;
   var footnoteslength = 0;
 
   app.scriptPreferences.enableRedraw = true;
@@ -139,11 +160,12 @@ var main = function() {
       }
     }
 
-    curr_horizontalMeasurementUnits = doc.viewPreferences.horizontalMeasurementUnits;
-    curr_verticalMeasurementUnits = doc.viewPreferences.verticalMeasurementUnits;
-
-    doc.viewPreferences.horizontalMeasurementUnits = MeasurementUnits.MILLIMETERS;
-    doc.viewPreferences.verticalMeasurementUnits = MeasurementUnits.MILLIMETERS;
+    curr_units = units.get(doc);
+    // curr_horizontalMeasurementUnits = doc.viewPreferences.horizontalMeasurementUnits;
+    // curr_verticalMeasurementUnits = doc.viewPreferences.verticalMeasurementUnits;
+    units.set(doc, settings.units);
+    // doc.viewPreferences.horizontalMeasurementUnits = MeasurementUnits.MILLIMETERS;
+    // doc.viewPreferences.verticalMeasurementUnits = MeasurementUnits.MILLIMETERS;
 
     rulerorigin = set_ruler(doc);
 
@@ -161,33 +183,33 @@ var main = function() {
       }
 
 
-      win = new Window("palette"); // create new palette
       if (stories.length === 1) {
         msg = "Processing selected story";
       } else {
         msg = "Processing whole document";
       }
-      win.txt = win.add('statictext', [x, y, w, y + h], msg); // add some text to the window
-      win.txt.alignment = 'left';
-      y += h + gutter;
-      win.st_txt = win.add('statictext', [x, y, w, y + h], "stories " + stories.length); // add some text to the window
-      win.st_txt.alignment = 'left';
-      y += h + gutter;
-      win.stories_bar = win.add("progressbar", [x, y, w, y + h], 0, stories.length); // add the bar
-      // win.stories_bar.preferredSize = [300, 20]; // set the size
       for (var st = 0; st < stories.length; st++) {
         footnoteslength += stories[st].footnotes.length;
       }
-      y += h + gutter;
-      win.footn_txt = win.add('statictext', [x, y, w, y + h], "footnotes " + footnoteslength); // add some text to the window
-      win.footn_txt.alignment = 'left';
-      y += h + gutter;
-      win.footn_bar = win.add("progressbar", [x, y, w, y + h], 0, footnoteslength); // add the bar
-      // win.footn_bar.preferredSize = [300, 20]; // set the size
+      win = create_window(msg, stories.length, footnoteslength); //new Window("palette"); // create new palette
+      // win.txt = win.add('statictext', [x, y, w, y + h], msg); // add some text to the window
+      // win.txt.alignment = 'left';
+      // y += h + gutter;
+      // win.st_txt = win.add('statictext', [x, y, w, y + h], "stories " + stories.length); // add some text to the window
+      // win.st_txt.alignment = 'left';
+      // y += h + gutter;
+      // win.stories_bar = win.add("progressbar", [x, y, w, y + h], 0, stories.length); // add the bar
+      // // win.stories_bar.preferredSize = [300, 20]; // set the size
+      // y += h + gutter;
+      // win.footn_txt = win.add('statictext', [x, y, w, y + h], "footnotes " + footnoteslength); // add some text to the window
+      // win.footn_txt.alignment = 'left';
+      // y += h + gutter;
+      // win.footn_bar = win.add("progressbar", [x, y, w, y + h], 0, footnoteslength); // add the bar
+      // // win.footn_bar.preferredSize = [300, 20]; // set the size
       win.show(); // show it
 
+      var footnote_frames = [];
       for (var i = 0; i < stories.length; i++) {
-        var footnote_frames = [];
         win.stories_bar.value = i;
         var story = stories[i];
         var counter = story.footnotes.length;
@@ -196,6 +218,17 @@ var main = function() {
         }
         for (var t = story.textContainers.length - 1; t >= 0; t--) {
           var tf = story.textContainers[t];
+          // find last character in frame
+          var dupe = tf.duplicate();
+          var tf_y2 = get_height_2c(dupe);
+          dupe.remove();
+          // for(var bl = tf.characters.length -1; bl >=0;bl--){
+          //   if(tf.characters[bl].hasOwnProperty("baseline")){
+          //     if(tf.characters[bl].baseline > tf_y2){
+          //       tf_y2 = tf.characters[bl].baseline;
+          //     }
+          //   }
+          // }
           var footn = null;
           // var double_column = false;
           var pargb = null;
@@ -214,6 +247,8 @@ var main = function() {
           if (tf.footnotes.length < 1) {
             continue;
           }
+
+          // tf_y2 = tf.lines.lastItem().baseline;
           footn = tf.footnotes;
 
           if (tf.textColumns.length > 0) {
@@ -238,18 +273,25 @@ var main = function() {
             pargb = get_height(footn[0].paragraphs[0]);
             y1 = pargb[0] - 1;
           }
-
-          var c_w = 0;
-          var f_w = 0;
+          // detect if we have the 2 column or one column layout
+          //
+          var column_width = 0;
+          var frame_width = 0;
+          var frame_y2 = 0;
           if (tf.textFramePreferences.textColumnCount > 1) {
-            c_w = 80;
-            f_w = 184.999999999968;
+            // two columns
+            column_width = 80;
+            frame_width = 184.999999999968;
+            frame_y2 = 250.5;
           } else {
-            c_w = 60;
-            f_w = 145;
+            // one column
+            column_width = 60;
+            frame_width = 145;
+            frame_y2 = 212.500277777778;
+
           }
-          y2 = tf.geometricBounds[2];
-          x2 = f_w;
+          y2 = frame_y2; // tf.geometricBounds[2];
+          x2 = frame_width;
           if (tf.parentPage.side === PageSideOptions.LEFT_HAND) {
             x1 = 21.999999999968;
 
@@ -259,12 +301,18 @@ var main = function() {
 
           }
 
+          // this is a bit dirty but should save us
+          // from having frames without content
+          if ((y1 > y2) || (y2 - y1) < 3) {
+            y1 = y2 - 3;
+          }
+
           footn_frame = tf.parentPage.textFrames.add({
             geometricBounds: [y1, x1, y2, x2],
             textFramePreferences: {
               textColumnCount: 2,
               textColumnGutter: 3,
-              textColumnFixedWidth: c_w
+              textColumnFixedWidth: column_width
 
             }
           });
@@ -272,7 +320,6 @@ var main = function() {
           // var old_bounds = null;
           for (var j = footn.length - 1; j >= 0; j--) {
             var onenote = footn[j];
-            var footnote_markers = null;
             win.footn_bar.value = win.footn_bar.value + 1;
 
             onenote.texts[0].move(LocationOptions.AFTER, footn_frame.insertionPoints.firstItem());
@@ -282,51 +329,78 @@ var main = function() {
             onenote.storyOffset.contents = "|=" + counter + "=|";
 
             onenote.remove();
-            reset();
-            app.findTextPreferences.findWhat = "^F";
-            app.changeTextPreferences.changeTo = "";
-            footnote_markers = footn_frame.findText();
-            for (var f = footnote_markers.length - 1; f >= 0; f--) {
-              footnote_markers[f].remove();
-            }
             // footn_frame.fit(FitOptions.FRAME_TO_CONTENT);
             footn_frame.paragraphs.firstItem().remove();
             counter--;
           }
           var old_bounds = tf.geometricBounds;
-          tf.geometricBounds = [old_bounds[0], old_bounds[1], footn_frame.geometricBounds[0], old_bounds[3]];
-          // footn_frame.paragraphs.everyItem().applyParagraphStyle(footnotestyle, true);
-          // footn_frame.paragraphs.everyItem().applyCharacterStyle(doc.characterStyles.item(0));
+          if (DEBUG) {
+            // just to see whats going on
+            var line = tf.parentPage.graphicLines.add();
+            line.paths[0].pathPoints[0].anchor = [old_bounds[1], tf_y2];
+            line.paths[0].pathPoints[1].anchor = [old_bounds[1] + 10, tf_y2];
+          }
+          if(tf_y2 > y2){
+            tf_y2 = y2;
+          }
+          tf.geometricBounds = [old_bounds[0], old_bounds[1], tf_y2, old_bounds[3]];
           footnote_frames.push(footn_frame);
         } // end of container
+        // app.findGrepPreferences.findWhat = "(\\|\\=)(\\d{1,10})(\\=\\|)";
+        // app.changeGrepPreferences.changeTo = "$2";
+        // app.changeGrepPreferences.appliedCharacterStyle = markerstyle;
+        // story.changeGrep();
         reset();
-        app.findGrepPreferences.findWhat = "(\\|\\=)(\\d{1,10})(\\=\\|)";
-        app.changeGrepPreferences.changeTo = "$2";
-        app.changeGrepPreferences.appliedCharacterStyle = markerstyle;
-        story.changeGrep();
-        //
-        for (var fnf = footnote_frames.length - 1; fnf >= 0; fnf--) {
-          var curr_frame = footnote_frames[fnf];
-          reset();
-          app.findGrepPreferences.findWhat = "(\\t\\d{1,100}\\t)";
-          app.changeGrepPreferences.changeTo = "\\r$1";
-          app.changeGrepPreferences.appliedCharacterStyle = doc.characterStyles.itemByName(settings.footnoteNumberStyle);
-          curr_frame.changeGrep();
-          if (settings.doFootnotesStory === true) {
-            if (fnf !== footnote_frames.length - 1) {
-              curr_frame.previousTextFrame = footnote_frames[fnf + 1];
-            }
-          }
-        } // end fn loop
+        clean_up.change.grep(story, "(\\|\\=)(\\d{1,10})(\\=\\|)", "$2", markerstyle);
+        reset();
+        clean_up.change.grep(footnote_frames[0].parentStory, "\\A\\r", "", null);
+        // app.findGrepPreferences.findWhat = ;
+        // app.changeGrepPreferences.changeTo = "";
+        // .changeGrep();
       } // end of for stories loop
+
+      for (var fnf = footnote_frames.length - 1; fnf >= 0; fnf--) {
+        var curr_frame = footnote_frames[fnf];
+        reset();
+        // app.findTextPreferences.findWhat = "^F";
+        // app.changeTextPreferences.changeTo = "";
+        var footnote_markers = null;
+        // try{
+        // footnote_markers = curr_frame.findText();
+        footnote_markers = clean_up.find.text(curr_frame, "^F", "", null);
+
+        for (var f = footnote_markers.length - 1; f >= 0; f--) {
+          footnote_markers[f].remove();
+        }
+        // }catch(e){
+        //   if(DEBUG){$.writeln("error " + e);}
+        // }
+        reset();
+
+        clean_up.change.grep(curr_frame, "(\\t\\d{1,100}\\t)", "\\r$1", doc.characterStyles.itemByName(settings.footnoteNumberStyle));
+        // app.findGrepPreferences.findWhat = "(\\t\\d{1,100}\\t)";
+        // app.changeGrepPreferences.changeTo = "\\r$1";
+        // app.changeGrepPreferences.appliedCharacterStyle = doc.characterStyles.itemByName(settings.footnoteNumberStyle);
+        // try{
+        // curr_frame.changeGrep();
+        //   }catch(e){
+        //   if(DEBUG){$.writeln("error " + e);}
+        // }
+        if (settings.doFootnotesStory === true) {
+          if (fnf !== footnote_frames.length - 1) {
+            curr_frame.previousTextFrame = footnote_frames[fnf + 1];
+          }
+        }
+      } // end fn loop
 
       win.close();
     } // end of else no story selected
 
     // RESET doc
     reset_ruler(doc, rulerorigin);
-    doc.viewPreferences.horizontalMeasurementUnits = curr_horizontalMeasurementUnits;
-    doc.viewPreferences.verticalMeasurementUnits = curr_verticalMeasurementUnits;
+    units.set(doc, curr_units);
+    // doc.viewPreferences.horizontalMeasurementUnits = curr_horizontalMeasurementUnits;
+    // doc.viewPreferences.verticalMeasurementUnits = curr_verticalMeasurementUnits;
   } // end of doc
 
 };

@@ -16,3 +16,11 @@ var find_stories = function(d) {
         }
     }
 };
+
+var get_footnotes_length = function(stories){
+    var num = 0;
+          for (var st = 0; st < stories.length; st++) {
+        num += stories[st].footnotes.length;
+      }
+      return num;
+};

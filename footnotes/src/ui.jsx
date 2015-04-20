@@ -29,3 +29,4 @@ var create_window = function(msg, st_length, fn_length) {
   // win.footn_bar.preferredSize = [300, 20]; // set the size
   return win;
 };
+

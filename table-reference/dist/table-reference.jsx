@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! table-reference.jsx - v0.2.1 - 2015-04-13 */
+/*! table-reference.jsx - v0.2.1 - 2015-04-20 */
 /*
  * table-reference.jsx
  * creates hyperlinks from patterns

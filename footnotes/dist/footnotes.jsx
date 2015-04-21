@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! footnotes.jsx - v0.1.0 - 2015-04-20 */
+/*! footnotes.jsx - v0.1.0 - 2015-04-21 */
 /*
  * footnotes
  * https://github.com/fabiantheblind/emb-scripts
@@ -127,10 +127,8 @@ var get_height = function(p) {
 
 var get_height_2c = function(fr) {
   try {
-
     var polygons = fr.createOutlines(false);
     var y2 = 0;
-
     for (var i = 0; i < polygons.length; i++) {
       if (polygons[i].geometricBounds[2] > y2) {
         y2 = polygons[i].geometricBounds[2];
@@ -144,6 +142,8 @@ var get_height_2c = function(fr) {
     return fr.geometricBounds[2];
   }
 };
+
+
 
 // var get_textframe_lower_bounds = function(l){
 
@@ -215,20 +215,20 @@ var frame_height_calculator = function(pars, tfgb) {
 var footnote_infos = function(tf, txt) {
   var pg = tf.parentPage;
   var infofr = pg.textFrames.add({
-    contents:"This frame is just to see which footnotes where originally on this page.\n"
-    });
+    contents: "This frame is just to see which footnotes where originally on this page.\n"
+  });
   var d = pg.parent.parent;
   var pw = d.documentPreferences.pageWidth;
   var ph = d.documentPreferences.pageHeight;
-var gb = [];
+  var gb = [];
   if (pg.side === PageSideOptions.LEFT_HAND) {
-    gb = [0,-50,ph,-5 ];
+    gb = [0, -50, ph, -5];
 
   } else if (pg.side === PageSideOptions.RIGHT_HAND) {
     gb = [0, pw + 5, ph, pw + 50];
   }
   infofr.geometricBounds = gb;
-  infofr.contents+=  txt;
+  infofr.contents += txt;
 };
 var units = {};
 units.get = function(d) {
@@ -340,6 +340,79 @@ var get_footnotes_length = function(stories){
       }
       return num;
 };
+var process = {};
+
+process.which_pageside = function(frame, x1, x2) {
+  if (frame.parentPage.side === PageSideOptions.LEFT_HAND) {
+    x1 = 21.999999999968;
+  } else if (frame.parentPage.side === PageSideOptions.RIGHT_HAND) {
+    x1 = 21.999999999968 - 6;
+    x2 = x2 - 6;
+  }
+  var res = {
+    "x1": x1,
+    "x2": x2
+  };
+  return res;
+};
+
+process.single_column = function(footn) {
+  if (DEBUG) {
+    $.writeln("we have only one column");
+  }
+  var pargb = get_height(footn[0].paragraphs[0]);
+  var y1 = pargb[0] - 1;
+  // one column
+  var column_width = 60;
+  var frame_width = 145;
+  var frame_y2 = 212.500277777778;
+};
+
+process.double_column = function() {
+
+};
+
+process.footnotes = function(win, tf,footn, footn_frame, info, counter) {
+  for (var j = footn.length - 1; j >= 0; j--) {
+    var onenote = footn[j];
+    win.footn_bar.value = win.footn_bar.value + 1;
+    onenote.texts[0].move(LocationOptions.AFTER, footn_frame.insertionPoints.firstItem());
+    footn_frame.insertionPoints.firstItem().contents = "\r" + "\t" + counter;
+    info.push(counter);
+    onenote.storyOffset.contents = "|=" + counter + "=|";
+
+    onenote.remove();
+    footn_frame.paragraphs.firstItem().remove();
+    counter--;
+  }
+  footnote_infos(tf, info.join("\r"));
+
+// res = {
+//   "counter":counter,
+// };
+  return counter;
+
+};
+
+process.footnote_frames = function(d, frames) {
+
+  for (var fnf = frames.length - 1; fnf >= 0; fnf--) {
+    var curr_frame = frames[fnf];
+    reset();
+    var footnote_markers = null;
+    footnote_markers = clean_up.find.text(curr_frame, "^F", "", null);
+    for (var f = footnote_markers.length - 1; f >= 0; f--) {
+      footnote_markers[f].remove();
+    }
+    reset();
+    clean_up.change.grep(curr_frame, "(\\t\\d{1,100}\\t)", "\\r$1", d.characterStyles.itemByName(settings.footnoteNumberStyle));
+    if (settings.doFootnotesStory === true) {
+      if (fnf !== frames.length - 1) {
+        curr_frame.previousTextFrame = frames[fnf + 1];
+      }
+    }
+  } // end fn loop
+};
 var main = function() {
   var rulerorigin = null;
   var curr_units = null;
@@ -406,7 +479,7 @@ var main = function() {
       }
       for (var t = story.textContainers.length - 1; t >= 0; t--) {
         var tf = story.textContainers[t];
-        // find last character in frame
+
         var dupe = tf.duplicate();
         var tf_y2 = get_height_2c(dupe);
         dupe.remove();
@@ -474,14 +547,16 @@ var main = function() {
         }
         y2 = frame_y2; // tf.geometricBounds[2];
         x2 = frame_width;
-        if (tf.parentPage.side === PageSideOptions.LEFT_HAND) {
-          x1 = 21.999999999968;
 
-        } else if (tf.parentPage.side === PageSideOptions.RIGHT_HAND) {
-          x1 = 21.999999999968 - 6;
-          x2 = x2 - 6;
-
-        }
+        var x1x2 = process.which_pageside(tf, x1, x2);
+        x1 = x1x2.x1;
+        x2 = x1x2.x2;
+        // if (tf.parentPage.side === PageSideOptions.LEFT_HAND) {
+        //   x1 = 21.999999999968;
+        // } else if (tf.parentPage.side === PageSideOptions.RIGHT_HAND) {
+        //   x1 = 21.999999999968 - 6;
+        //   x2 = x2 - 6;
+        // }
 
         // this is a bit dirty but should save us
         // from having frames without content
@@ -490,7 +565,7 @@ var main = function() {
         }
 
         footn_frame = tf.parentPage.textFrames.add({
-          geometricBounds: [y1, x1, y2, x2],
+          geometricBounds: [tf_y2 + 4.833, x1, y2, x2],
           textFramePreferences: {
             textColumnCount: 2,
             textColumnGutter: 3,
@@ -499,20 +574,23 @@ var main = function() {
           }
         });
         var info = [];
-        for (var j = footn.length - 1; j >= 0; j--) {
-          var onenote = footn[j];
-          win.footn_bar.value = win.footn_bar.value + 1;
+        footn_frame.insertionPoints.lastItem().contents = SpecialCharacters.FRAME_BREAK;
+        counter = process.footnotes(win, tf, footn, footn_frame, info, counter);
+        // counter = cntrinfo.counter;
+        // info = cntrinfo.info;
+        // for (var j = footn.length - 1; j >= 0; j--) {
+        //   var onenote = footn[j];
+        //   win.footn_bar.value = win.footn_bar.value + 1;
+        //   onenote.texts[0].move(LocationOptions.AFTER, footn_frame.insertionPoints.firstItem());
+        //   footn_frame.insertionPoints.firstItem().contents = "\r" + "\t" + counter;
+        //   info.push(counter);
+        //   onenote.storyOffset.contents = "|=" + counter + "=|";
 
-          onenote.texts[0].move(LocationOptions.AFTER, footn_frame.insertionPoints.firstItem());
-          footn_frame.insertionPoints.firstItem().contents = "\r" + "\t" + counter;
-          info.push(counter);
-          onenote.storyOffset.contents = "|=" + counter + "=|";
-
-          onenote.remove();
-          footn_frame.paragraphs.firstItem().remove();
-          counter--;
-        }
-        footnote_infos(tf, info.join("\r"));
+        //   onenote.remove();
+        //   footn_frame.paragraphs.firstItem().remove();
+        //   counter--;
+        // }
+        // footnote_infos(tf, info.join("\r"));
         var old_bounds = tf.geometricBounds;
         if (DEBUG) {
           // just to see whats going on
@@ -520,9 +598,9 @@ var main = function() {
           // line.paths[0].pathPoints[0].anchor = [old_bounds[1], tf_y2];
           // line.paths[0].pathPoints[1].anchor = [old_bounds[1] + 10, tf_y2];
         }
-        if (tf_y2 > y2) {
-          tf_y2 = y2;
-        }
+        // if (tf_y2 > y2) {
+        //   tf_y2 = y2;
+        // }
         tf.geometricBounds = [old_bounds[0], old_bounds[1], tf_y2, old_bounds[3]];
         footnote_frames.push(footn_frame);
       } // end of textContainer
@@ -533,23 +611,23 @@ var main = function() {
       clean_up.change.grep(footnote_frames[0].parentStory, "\\A\\r", "", null);
 
     } // end of for stories loop
-
-    for (var fnf = footnote_frames.length - 1; fnf >= 0; fnf--) {
-      var curr_frame = footnote_frames[fnf];
-      reset();
-      var footnote_markers = null;
-      footnote_markers = clean_up.find.text(curr_frame, "^F", "", null);
-      for (var f = footnote_markers.length - 1; f >= 0; f--) {
-        footnote_markers[f].remove();
-      }
-      reset();
-      clean_up.change.grep(curr_frame, "(\\t\\d{1,100}\\t)", "\\r$1", doc.characterStyles.itemByName(settings.footnoteNumberStyle));
-      if (settings.doFootnotesStory === true) {
-        if (fnf !== footnote_frames.length - 1) {
-          curr_frame.previousTextFrame = footnote_frames[fnf + 1];
-        }
-      }
-    } // end fn loop
+    process.footnote_frames(doc, footnote_frames);
+    // for (var fnf = footnote_frames.length - 1; fnf >= 0; fnf--) {
+    //   var curr_frame = footnote_frames[fnf];
+    //   reset();
+    //   var footnote_markers = null;
+    //   footnote_markers = clean_up.find.text(curr_frame, "^F", "", null);
+    //   for (var f = footnote_markers.length - 1; f >= 0; f--) {
+    //     footnote_markers[f].remove();
+    //   }
+    //   reset();
+    //   clean_up.change.grep(curr_frame, "(\\t\\d{1,100}\\t)", "\\r$1", doc.characterStyles.itemByName(settings.footnoteNumberStyle));
+    //   if (settings.doFootnotesStory === true) {
+    //     if (fnf !== footnote_frames.length - 1) {
+    //       curr_frame.previousTextFrame = footnote_frames[fnf + 1];
+    //     }
+    //   }
+    // } // end fn loop
     footnote_story = footnote_frames[0].parentStory;
     win.close();
   } // end of else no story selected
@@ -561,14 +639,19 @@ var main = function() {
 var fn_story = main();
 // we need to clena up once more
 
-try{
+// fn_story.textContainers[0].paragraphs.firstItem().remove();
+clean_up.change.grep(fn_story, "^\\r\\t", "\\t", null);
+clean_up.change.grep(fn_story, "(?<!^)(\\t\\d{1,100}\\t)", "\\r$1", settings.footnoteNumberStyle);
+clean_up.change.grep(fn_story, "(?<!^)(\\t\\d{1,100}\\t)", "\\r$1", settings.footnoteNumberStyle);
 
-var markers = clean_up.find.text(fn_story, "^F", "", null);
-for (var f = markers.length - 1; f >= 0; f--) {
-  markers[f].remove();
-}
-}catch(e){}
+try {
+  var markers = clean_up.find.text(fn_story, "^F", "", null);
+  for (var f = markers.length - 1; f >= 0; f--) {
+    markers[f].remove();
+  }
+} catch (e) {}
 
-try{clean_up.change.grep(fn_story, "(\\t\\d{1,100}\\t)", "\\r$1", app.activeDocument.characterStyles.itemByName(settings.footnoteNumberStyle));
-}catch(e){}
+// try{
+// clean_up.change.grep(fn_story, "(\\t\\d{1,100}\\t)", "\\r$1", app.activeDocument.characterStyles.itemByName(settings.footnoteNumberStyle));
+// }catch(e){}
 })(this);

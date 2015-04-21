@@ -34,6 +34,7 @@ module.exports = function(grunt) {
         "src/ruler.jsx",
         "src/pages.jsx",
         "src/stories.jsx",
+        "src/processors.jsx",
         "src/main.jsx"
         ],
         dest: "src/tmp/<%= pkg.name %>.concat.<%= pkg.version %>.jsx"
@@ -100,7 +101,7 @@ module.exports = function(grunt) {
     },
     files: [
       // {src: ["path/*"], dest: "internal_folder/", filter: "isFile"}, // includes files in path
-      {flatten:true, src:["dist/<%= pkg.name %>.<%= pkg.version %>.jsx","dist/docs/**"]}, // includes files in path and its subdirs
+      {flatten:true, src:["dist/<%= pkg.name %>.jsx","dist/docs/**"]}, // includes files in path and its subdirs
       // {expand: true, cwd: "path/", src: ["**"], dest: "internal_folder3/"}, // makes all src relative to cwd
       // {flatten: true, src: ["path/**"], dest: "internal_folder4/", filter: "isFile"} // flattens results to a single level
     ]

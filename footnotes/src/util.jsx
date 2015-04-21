@@ -48,10 +48,8 @@ var get_height = function(p) {
 
 var get_height_2c = function(fr) {
   try {
-
     var polygons = fr.createOutlines(false);
     var y2 = 0;
-
     for (var i = 0; i < polygons.length; i++) {
       if (polygons[i].geometricBounds[2] > y2) {
         y2 = polygons[i].geometricBounds[2];
@@ -65,6 +63,8 @@ var get_height_2c = function(fr) {
     return fr.geometricBounds[2];
   }
 };
+
+
 
 // var get_textframe_lower_bounds = function(l){
 
@@ -136,18 +136,18 @@ var frame_height_calculator = function(pars, tfgb) {
 var footnote_infos = function(tf, txt) {
   var pg = tf.parentPage;
   var infofr = pg.textFrames.add({
-    contents:"This frame is just to see which footnotes where originally on this page.\n"
-    });
+    contents: "This frame is just to see which footnotes where originally on this page.\n"
+  });
   var d = pg.parent.parent;
   var pw = d.documentPreferences.pageWidth;
   var ph = d.documentPreferences.pageHeight;
-var gb = [];
+  var gb = [];
   if (pg.side === PageSideOptions.LEFT_HAND) {
-    gb = [0,-50,ph,-5 ];
+    gb = [0, -50, ph, -5];
 
   } else if (pg.side === PageSideOptions.RIGHT_HAND) {
     gb = [0, pw + 5, ph, pw + 50];
   }
   infofr.geometricBounds = gb;
-  infofr.contents+=  txt;
+  infofr.contents += txt;
 };

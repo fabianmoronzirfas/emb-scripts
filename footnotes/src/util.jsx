@@ -1,31 +1,4 @@
 /**
- * Taken from ScriptUI by Peter Kahrel
- * http://www.kahrel.plus.com/indesign/scriptui.html
- * see also
- * https://github.com/fabiantheblind/extendscript/wiki/Progress-And-Delay
- * @param  {Palette} w    the palette the progress is shown on
- * @param  {Number} stop the max value of the progressbar
- * @return {ProgressBar}  returns the progressbar element to play with
- */
-
-// usage
-// var progress_win = new Window("palette"); // creste new palette
-// progress = progress_bar(progress_win, end, 'Calculating Positions'); // call the pbar function
-//
-// progress.value = progress.value + 1;
-//
-// progress.parent.close();
-//
-function progress_bar(w, stop, labeltext) {
-  var txt = w.add('statictext', undefined, labeltext); // add some text to the window
-  var pbar = w.add("progressbar", undefined, 0, stop); // add the bar
-  pbar.preferredSize = [300, 20]; // set the size
-  w.show(); // show it
-  return pbar; // return it for further use
-}
-
-
-/**
  * [get_height description]
  * @param  {[type]} p [description]
  * @return {[type]}   [description]
@@ -45,7 +18,54 @@ var get_height = function(p) {
   return gb;
 };
 
+var line_height_calculator = function(line_one, line_two) {
+  var c1 = line_one.characters[0];
+  var c2 = line_two.characters[0];
+  var cx1 = c1.baseline;
+  var cx2 = c2.baseline;
+  var h = (cx2 > cx1) ? cx2 - cx1 : cx1 - cx2;
+  return h;
+};
 
+var footnote_frame_height_calculator = function(footnotes, h) {
+  var numberoflines = 0;
+  for(var i = 0; i < footnotes.length;i++){
+    for(var j = 0; j < footnotes[i].lines.length;j++){
+      numberoflines++;
+    }
+  }
+  var res = (numberoflines * h) / 2;
+  return res;
+};
+
+var test_footnote_height = function(doc) {
+  var testpage = doc.pages.add(LocationOptions.AT_END);
+  var testtf = testpage.textFrames.add({
+    geometricBounds: [0, 0, doc.documentPreferences.pageHeight, doc.documentPreferences.pageWidth]
+  });
+  testtf.contents = TextFrameContents.PLACEHOLDER_TEXT;
+  testtf.footnotes.add(LocationOptions.AFTER, testtf.insertionPoints.item(10), {
+    contents: "Hello First World\nHello Second World"
+  });
+  testtf.footnotes.add(LocationOptions.AFTER, testtf.insertionPoints.item(20), {
+    contents: "Hello Second World",
+
+  });
+  var line_one = testtf.footnotes[0].lines[0];
+  var line_two = testtf.footnotes[0].lines[1];
+  var line_height = line_height_calculator(line_one, line_two);
+  if (DEBUG) {
+    $.writeln("calc heights");
+    $.writeln(line_height);
+    // $.writeln(frame_height);
+  }
+  // if (DEBUG !== true) {
+    testpage.remove();
+  // }
+  return {
+    "line_height": line_height,
+  };
+};
 var get_height_2c = function(fr) {
   try {
     var polygons = fr.createOutlines(false);

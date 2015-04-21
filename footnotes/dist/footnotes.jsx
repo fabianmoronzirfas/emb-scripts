@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! footnotes.jsx - v0.1.0 - 2015-04-21 */
+/*! footnotes.jsx - v0.2.1 - 2015-04-21 */
 /*
  * footnotes
  * https://github.com/fabiantheblind/emb-scripts
@@ -9,6 +9,14 @@
  * Licensed under the MIT license.
  */
 
+// ##Version history
+// 0.2.1 minor error introduced by housekeeping. fixed
+// 0.2.0 this is as good as it can get
+// works nice with layout A one column
+// on layout two it needs minor adjsutments
+//
+// 0.1.0 works but with issues
+//
 var DEBUG = false;
 var now = new Date();
 var formatted_date = now.getUTCFullYear().toString() + "-" + (now.getUTCMonth() + 1).toString() + "-" + now.getUTCDate().toString();
@@ -22,7 +30,8 @@ var settings = {
    "units" : {
     "horizontal": MeasurementUnits.MILLIMETERS,
     "vertical":MeasurementUnits.MILLIMETERS
-  }
+  },
+  "footnote_frame_to_text_distance":4.833
 };
 var doc_check = function(){
 var d = null;
@@ -78,33 +87,6 @@ var create_window = function(msg, st_length, fn_length) {
 
 
 /**
- * Taken from ScriptUI by Peter Kahrel
- * http://www.kahrel.plus.com/indesign/scriptui.html
- * see also
- * https://github.com/fabiantheblind/extendscript/wiki/Progress-And-Delay
- * @param  {Palette} w    the palette the progress is shown on
- * @param  {Number} stop the max value of the progressbar
- * @return {ProgressBar}  returns the progressbar element to play with
- */
-
-// usage
-// var progress_win = new Window("palette"); // creste new palette
-// progress = progress_bar(progress_win, end, 'Calculating Positions'); // call the pbar function
-//
-// progress.value = progress.value + 1;
-//
-// progress.parent.close();
-//
-function progress_bar(w, stop, labeltext) {
-  var txt = w.add('statictext', undefined, labeltext); // add some text to the window
-  var pbar = w.add("progressbar", undefined, 0, stop); // add the bar
-  pbar.preferredSize = [300, 20]; // set the size
-  w.show(); // show it
-  return pbar; // return it for further use
-}
-
-
-/**
  * [get_height description]
  * @param  {[type]} p [description]
  * @return {[type]}   [description]
@@ -124,7 +106,54 @@ var get_height = function(p) {
   return gb;
 };
 
+var line_height_calculator = function(line_one, line_two) {
+  var c1 = line_one.characters[0];
+  var c2 = line_two.characters[0];
+  var cx1 = c1.baseline;
+  var cx2 = c2.baseline;
+  var h = (cx2 > cx1) ? cx2 - cx1 : cx1 - cx2;
+  return h;
+};
 
+var footnote_frame_height_calculator = function(footnotes, h) {
+  var numberoflines = 0;
+  for(var i = 0; i < footnotes.length;i++){
+    for(var j = 0; j < footnotes[i].lines.length;j++){
+      numberoflines++;
+    }
+  }
+  var res = (numberoflines * h) / 2;
+  return res;
+};
+
+var test_footnote_height = function(doc) {
+  var testpage = doc.pages.add(LocationOptions.AT_END);
+  var testtf = testpage.textFrames.add({
+    geometricBounds: [0, 0, doc.documentPreferences.pageHeight, doc.documentPreferences.pageWidth]
+  });
+  testtf.contents = TextFrameContents.PLACEHOLDER_TEXT;
+  testtf.footnotes.add(LocationOptions.AFTER, testtf.insertionPoints.item(10), {
+    contents: "Hello First World\nHello Second World"
+  });
+  testtf.footnotes.add(LocationOptions.AFTER, testtf.insertionPoints.item(20), {
+    contents: "Hello Second World",
+
+  });
+  var line_one = testtf.footnotes[0].lines[0];
+  var line_two = testtf.footnotes[0].lines[1];
+  var line_height = line_height_calculator(line_one, line_two);
+  if (DEBUG) {
+    $.writeln("calc heights");
+    $.writeln(line_height);
+    // $.writeln(frame_height);
+  }
+  // if (DEBUG !== true) {
+    testpage.remove();
+  // }
+  return {
+    "line_height": line_height,
+  };
+};
 var get_height_2c = function(fr) {
   try {
     var polygons = fr.createOutlines(false);
@@ -260,6 +289,7 @@ clean_up.find = {};
 
 clean_up.find.text = function(item, textfw, textct, style) {
   app.findTextPreferences.findWhat = textfw;
+
   app.changeTextPreferences.changeTo = textct;
   if(style !== null){
     app.changeTextPreferences.appliedCharacterStyle = style;
@@ -428,6 +458,8 @@ var main = function() {
   var footnoteslength = 0;
   var doc = null;
   var footnote_story = null;
+  // var line_height = 0;
+  // var frame_height = 0;
 
   app.scriptPreferences.enableRedraw = true;
 
@@ -439,20 +471,23 @@ var main = function() {
   curr_units = units.get(doc);
   units.set(doc, settings.units);
   rulerorigin = set_ruler(doc);
+  stories = find_stories(doc);
+
+  // var frame_info = test_footnote_height(doc);
+  // line_height = frame_info.line_height;
+  // frame_height = frame_info.frame_height;
 
   // get all the stories
-  stories = find_stories(doc);
   footnotestyle = doc.footnoteOptions.footnoteTextStyle;
   markerstyle = doc.footnoteOptions.footnoteMarkerStyle;
   separator = doc.footnoteOptions.separatorText;
   if (stories === null) {
     alert("Please select the story I should work on");
-    return;
+    exit();
   } else {
     if (DEBUG) {
       $.writeln(stories);
     }
-
     if (stories.length === 1) {
       msg = "Processing selected story";
     } else {
@@ -477,6 +512,8 @@ var main = function() {
       if (DEBUG) {
         $.writeln("story number " + i + " has " + story.textContainers.length + " textFrames");
       }
+
+
       for (var t = story.textContainers.length - 1; t >= 0; t--) {
         var tf = story.textContainers[t];
 
@@ -491,6 +528,9 @@ var main = function() {
         var x1 = 0;
         var y2 = 0;
         var x2 = 0;
+        var column_width = 0;
+        var frame_width = 0;
+        var frame_y2 = 0;
         var footn_frame = null;
         var pars = [];
 
@@ -503,16 +543,18 @@ var main = function() {
           continue;
         }
 
-        // tf_y2 = tf.lines.lastItem().baseline;
         footn = tf.footnotes;
+        // frame_height = footnote_frame_height_calculator(footn, line_height);
 
-        if (tf.textColumns.length > 0) {
+        // detect if we have the 2 column or one column layout
+        if (tf.textFramePreferences.textColumnCount > 1) {
           // we have double columns
-          // double_column = true;
-
           if (DEBUG) {
             $.writeln("we have " + tf.textColumns.length + " columns");
           }
+          column_width = 80;
+          frame_width = 184.999999999968;
+          frame_y2 = 250.5;
           // aggreagate all paragraphs in footnotes
           for (var fn = 0; fn < tf.footnotes.length; fn++) {
             for (var p = 0; p < tf.footnotes[fn].paragraphs.length; p++) {
@@ -521,42 +563,25 @@ var main = function() {
           }
           y1 = frame_height_calculator(pars, tf.geometricBounds) - 1;
 
+
         } else {
           if (DEBUG) {
             $.writeln("we have only one column");
           }
-          pargb = get_height(footn[0].paragraphs[0]);
-          y1 = pargb[0] - 1;
-        }
-        // detect if we have the 2 column or one column layout
-        //
-        var column_width = 0;
-        var frame_width = 0;
-        var frame_y2 = 0;
-        if (tf.textFramePreferences.textColumnCount > 1) {
-          // two columns
-          column_width = 80;
-          frame_width = 184.999999999968;
-          frame_y2 = 250.5;
-        } else {
           // one column
           column_width = 60;
           frame_width = 145;
           frame_y2 = 212.500277777778;
-
+          pargb = get_height(footn[0].paragraphs[0]);
+          y1 = pargb[0] - 1;
         }
+
         y2 = frame_y2; // tf.geometricBounds[2];
         x2 = frame_width;
 
         var x1x2 = process.which_pageside(tf, x1, x2);
         x1 = x1x2.x1;
         x2 = x1x2.x2;
-        // if (tf.parentPage.side === PageSideOptions.LEFT_HAND) {
-        //   x1 = 21.999999999968;
-        // } else if (tf.parentPage.side === PageSideOptions.RIGHT_HAND) {
-        //   x1 = 21.999999999968 - 6;
-        //   x2 = x2 - 6;
-        // }
 
         // this is a bit dirty but should save us
         // from having frames without content
@@ -564,8 +589,9 @@ var main = function() {
           y1 = y2 - 3;
         }
 
+        // minimum distance from tf to fn frame = 4.833
         footn_frame = tf.parentPage.textFrames.add({
-          geometricBounds: [tf_y2 + 4.833, x1, y2, x2],
+          geometricBounds: [tf_y2 + settings.footnote_frame_to_text_distance /*y2 - frame_height*/, x1, y2, x2],
           textFramePreferences: {
             textColumnCount: 2,
             textColumnGutter: 3,
@@ -576,31 +602,17 @@ var main = function() {
         var info = [];
         footn_frame.insertionPoints.lastItem().contents = SpecialCharacters.FRAME_BREAK;
         counter = process.footnotes(win, tf, footn, footn_frame, info, counter);
-        // counter = cntrinfo.counter;
-        // info = cntrinfo.info;
-        // for (var j = footn.length - 1; j >= 0; j--) {
-        //   var onenote = footn[j];
-        //   win.footn_bar.value = win.footn_bar.value + 1;
-        //   onenote.texts[0].move(LocationOptions.AFTER, footn_frame.insertionPoints.firstItem());
-        //   footn_frame.insertionPoints.firstItem().contents = "\r" + "\t" + counter;
-        //   info.push(counter);
-        //   onenote.storyOffset.contents = "|=" + counter + "=|";
-
-        //   onenote.remove();
-        //   footn_frame.paragraphs.firstItem().remove();
-        //   counter--;
-        // }
-        // footnote_infos(tf, info.join("\r"));
         var old_bounds = tf.geometricBounds;
-        if (DEBUG) {
-          // just to see whats going on
-          // var line = tf.parentPage.graphicLines.add();
-          // line.paths[0].pathPoints[0].anchor = [old_bounds[1], tf_y2];
-          // line.paths[0].pathPoints[1].anchor = [old_bounds[1] + 10, tf_y2];
+
+        footn_frame.fit(FitOptions.FRAME_TO_CONTENT);
+        var curr_y2 = footn_frame.geometricBounds[2];
+        var diff = frame_y2 - curr_y2;
+
+        var mover = [0,diff];
+        footn_frame.move(undefined, mover);
+        if(tf_y2 > footn_frame.geometricBounds[0]){
+          tf_y2 = footn_frame.geometricBounds[0] - settings.footnote_frame_to_text_distance;
         }
-        // if (tf_y2 > y2) {
-        //   tf_y2 = y2;
-        // }
         tf.geometricBounds = [old_bounds[0], old_bounds[1], tf_y2, old_bounds[3]];
         footnote_frames.push(footn_frame);
       } // end of textContainer
@@ -608,27 +620,12 @@ var main = function() {
       reset();
       clean_up.change.grep(story, "(\\|\\=)(\\d{1,10})(\\=\\|)", "$2", markerstyle);
       reset();
-      clean_up.change.grep(footnote_frames[0].parentStory, "\\A\\r", "", null);
 
     } // end of for stories loop
     process.footnote_frames(doc, footnote_frames);
-    // for (var fnf = footnote_frames.length - 1; fnf >= 0; fnf--) {
-    //   var curr_frame = footnote_frames[fnf];
-    //   reset();
-    //   var footnote_markers = null;
-    //   footnote_markers = clean_up.find.text(curr_frame, "^F", "", null);
-    //   for (var f = footnote_markers.length - 1; f >= 0; f--) {
-    //     footnote_markers[f].remove();
-    //   }
-    //   reset();
-    //   clean_up.change.grep(curr_frame, "(\\t\\d{1,100}\\t)", "\\r$1", doc.characterStyles.itemByName(settings.footnoteNumberStyle));
-    //   if (settings.doFootnotesStory === true) {
-    //     if (fnf !== footnote_frames.length - 1) {
-    //       curr_frame.previousTextFrame = footnote_frames[fnf + 1];
-    //     }
-    //   }
-    // } // end fn loop
+
     footnote_story = footnote_frames[0].parentStory;
+    clean_up.change.grep(footnote_story, "\\A\\r", "", null);
     win.close();
   } // end of else no story selected
   // RESET doc
@@ -637,21 +634,15 @@ var main = function() {
   return footnote_story;
 };
 var fn_story = main();
-// we need to clena up once more
+// we need to clean up once more
 
-// fn_story.textContainers[0].paragraphs.firstItem().remove();
 clean_up.change.grep(fn_story, "^\\r\\t", "\\t", null);
 clean_up.change.grep(fn_story, "(?<!^)(\\t\\d{1,100}\\t)", "\\r$1", settings.footnoteNumberStyle);
 clean_up.change.grep(fn_story, "(?<!^)(\\t\\d{1,100}\\t)", "\\r$1", settings.footnoteNumberStyle);
-
 try {
   var markers = clean_up.find.text(fn_story, "^F", "", null);
   for (var f = markers.length - 1; f >= 0; f--) {
     markers[f].remove();
   }
 } catch (e) {}
-
-// try{
-// clean_up.change.grep(fn_story, "(\\t\\d{1,100}\\t)", "\\r$1", app.activeDocument.characterStyles.itemByName(settings.footnoteNumberStyle));
-// }catch(e){}
 })(this);

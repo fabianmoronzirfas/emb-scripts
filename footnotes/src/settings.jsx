@@ -5,5 +5,6 @@ var settings = {
    "units" : {
     "horizontal": MeasurementUnits.MILLIMETERS,
     "vertical":MeasurementUnits.MILLIMETERS
-  }
+  },
+  "footnote_frame_to_text_distance":4.833
 };

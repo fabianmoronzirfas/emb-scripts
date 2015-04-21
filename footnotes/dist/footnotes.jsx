@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! footnotes.jsx - v0.2.1 - 2015-04-21 */
+/*! footnotes.jsx - v0.2.2 - 2015-04-21 */
 /*
  * footnotes
  * https://github.com/fabiantheblind/emb-scripts
@@ -10,6 +10,7 @@
  */
 
 // ##Version history
+// 0.2.2 cathc an error if there are no footnotes
 // 0.2.1 minor error introduced by housekeeping. fixed
 // 0.2.0 this is as good as it can get
 // works nice with layout A one column
@@ -623,7 +624,19 @@ var main = function() {
 
     } // end of for stories loop
     process.footnote_frames(doc, footnote_frames);
-
+    if(DEBUG){
+      $.writeln("how many footnote frames: " + footnote_frames.length);
+    }
+    if(footnote_frames.length === 0){
+      if(DEBUG){
+        $.writeln("nothing to do here.\nThere where no footnotes in this frame");
+        $.writeln("reset ruler || reset units\nexit");
+    }
+      reset_ruler(doc, rulerorigin);
+      units.set(doc, curr_units);
+      win.close();
+      exit();
+    }
     footnote_story = footnote_frames[0].parentStory;
     clean_up.change.grep(footnote_story, "\\A\\r", "", null);
     win.close();

@@ -7,6 +7,7 @@
  */
 
 // ##Version history
+// 0.2.2 cathc an error if there are no footnotes
 // 0.2.1 minor error introduced by housekeeping. fixed
 // 0.2.0 this is as good as it can get
 // works nice with layout A one column

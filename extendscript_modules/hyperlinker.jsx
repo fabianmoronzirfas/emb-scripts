@@ -164,7 +164,6 @@ var hl_builder = function(d, data, prefix, slice) {
  * @return {Object}         pass through the result of the hl_builder()
  */
 var hyperlinker = function(d, data, slice, prefix) {
-  // TODO Give new Hyperlinks names so I can identify them as mine
   // remove all existing hyperlinks
   // d.hyperlinks.everyItem().remove();
   if (prefix === null || prefix === undefined) {

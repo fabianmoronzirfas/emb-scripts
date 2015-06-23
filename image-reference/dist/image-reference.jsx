@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! image-reference.jsx - v0.4.3 - 2015-04-27 */
+/*! image-reference.jsx - v0.4.4 - 2015-06-23 */
 /*
  * image-reference.jsx
  * creates hyperlinks from patterns
@@ -32,6 +32,7 @@
  */
 
 // ##Version history
+// 0.4.4 update query
 // 0.4.3 added jumptotext or not
 // 0.4.2 works
 // 0.4.1 logger creates folder
@@ -64,7 +65,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "##\\(\\d{1,10}(.*?\\d{1,10})\\)##",
+        "findWhat": "##(\\d{1,10}.*?\\d{1,10})##",
       },
       "changeGrepPreferences": {
         "changeTo": "($1)"
@@ -77,7 +78,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "##\\d{1,10}(.*?\\d{1,10})##",
+        "findWhat": "#\\|(\\d{1,10}.*?\\d{1,10})\\|#",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -92,7 +93,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "##\\d{1,10}(.*?\\d{1,10})##",
+        "findWhat": "#\\|(\\d{1,10}.*?\\d{1,10})\\|#",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -105,7 +106,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\|\\|\\d{1,10}.*?(\\d{1,10})\\|\\|",
+        "findWhat": "\\|\\|(\\d{1,10}.*?\\d{1,10})\\|\\|",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -510,7 +511,6 @@ var hl_builder = function(d, data, prefix, slice) {
  * @return {Object}         pass through the result of the hl_builder()
  */
 var hyperlinker = function(d, data, slice, prefix) {
-  // TODO Give new Hyperlinks names so I can identify them as mine
   // remove all existing hyperlinks
   // d.hyperlinks.everyItem().remove();
   if (prefix === null || prefix === undefined) {

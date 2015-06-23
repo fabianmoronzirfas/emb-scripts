@@ -4,14 +4,14 @@ var settings = {
   "linefeeds": null,
   "rewirte": true,
   "queries": [{
-    "name":"Find text to table sub text",
-    "prefix": "ToTbl-",
+    "name":"Find panel text to panel sub text",
+    "prefix": "ToPnl-",
     "source": {
-      "fcquery": "emb-in-text-source-table",
+      "fcquery": "emb-in-text-source-panel",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\$\\$(\\d{1,10}.*?\\d{1,10}\\)\\$\\$",
+        "findWhat": "\\&\\&(\\d{1,10}.*?\\d{1,10})\\&\\&",
       },
       "changeGrepPreferences": {
         "changeTo": "($1)"
@@ -20,11 +20,11 @@ var settings = {
       "charstyle": null
     },
     "target": {
-      "fcquery": "emb-in-text-target-table",
+      "fcquery": "emb-in-text-target-panel",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\$\\|(\\d{1,10}.*?\\d{1,10})\\|\\$",
+        "findWhat": "\\&\\|(\\d{1,10}.*?\\d{1,10})\\|\\&",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -33,14 +33,14 @@ var settings = {
       "charstyle": null,
     }
   }, {
-    "prefix": "ToTblRef-",
-    "name":"Find sub table text to table reference",
+    "prefix": "ToPnlRef-",
+    "name":"Find sub panel text to panel reference",
     "source": {
-      "fcquery": "emb-sub-text-source-table",
+      "fcquery": "emb-sub-text-source-panel",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\$\\|(\\d{1,10}.*?\\d{1,10})\\|\\$",
+        "findWhat": "\\&\\|(\\d{1,10}.*?\\d{1,10})\\|\\&",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -49,11 +49,11 @@ var settings = {
       "charstyle": null
     },
     "target": {
-      "fcquery": "emb-sub-text-target-table",
+      "fcquery": "emb-sub-text-target-panel",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "==(\\d{1,10}.*?\\d{1,10})==",
+        "findWhat": "\\%\\%(\\d{1,10}.*?\\d{1,10})\\%\\%",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"

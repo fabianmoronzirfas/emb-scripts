@@ -3,22 +3,15 @@
  * creates hyperlinks from patterns
  * currently the pattern is for the sources
  *
- *  $$(NumberAbb. Number)$$
+ *  &&(Number-Number)&&
  *
  * for the targets
  *
- * $$NumberName Number$$
+ * &|Number-Number|&
  *
  * it also connects the targets from process one to
  *
- * ==NumberName Number==
- *
- * e.g.
- *
- * ##(1Abb. 1)## -- to --> ##1Abb. 1## -- to --> ||1Abb. 1||
- *
- *
- *
+ * %%Number-Number%%
  *
  * it creates its own find change grep query if necessary and executes it
  *
@@ -29,9 +22,6 @@
  */
 
 // ##Version history
-// 0.2.2 update query
-// 0.2.1 added jumptotext or not
-// 0.2.0 works fine
-// 0.1.0 initial version based on image-reference.jsx
+// 0.1.0 initial version based on table-reference.jsx
 //
 

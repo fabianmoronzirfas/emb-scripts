@@ -1,16 +1,20 @@
 (function(thisObj) {
 
-/*! cross-reference.jsx - v0.4.3 - 2015-06-23 */
+/*! panel-reference.jsx - v0.1.0 - 2015-06-23 */
 /*
- * cross-reference.jsx
+ * table-reference.jsx
  * creates hyperlinks from patterns
  * currently the pattern is for the sources
  *
- *  [[NumberName YYYY]]
+ *  &&(Number-Number)&&
  *
  * for the targets
  *
- * {{NumberName YYYY}}
+ * &|Number-Number|&
+ *
+ * it also connects the targets from process one to
+ *
+ * %%Number-Number%%
  *
  * it creates its own find change grep query if necessary and executes it
  *
@@ -21,59 +25,81 @@
  */
 
 // ##Version history
-// 0.4.3 update query
-// 0.4.2 added jumptotext or not
-// 0.4.1 update to latest cleaner module
-// 0.4.0 using extendscript_modules
-// 0.3.0 only clean up the ones that are really used
-// 0.2.0 creates report
-// 0.1.2 remove Numbers as well
-// 0.1.1 fix debug bug where hyperlink creation was not executed
-// 0.1.0 initial version
+// 0.1.0 initial version based on table-reference.jsx
 //
+
 
 // #target "indesign-8" // jshint ignore:line
 
-var DEBUG = false;
+var DEBUG = true;
 var now = new Date();
 var formatted_date = now.getUTCFullYear().toString() + "-" + (now.getUTCMonth() + 1).toString() + "-" + now.getUTCDate().toString();
 var formatted_time = now.getHours().toString()+ "-" + now.getMinutes().toString() + "-" +now.getSeconds().toString();
 
-/**
- * the main settings object
- * @type {Object}
- */
 var settings = {
-  "jumptotext":true,
+    "jumptotext":true,
   "delimiter": null,
   "linefeeds": null,
   "rewirte": true,
-  "source": {
-    "fcquery": "emb-source-cross",
-    "mode": SearchModes.grepSearch,
+  "queries": [{
+    "name":"Find panel text to panel sub text",
+    "prefix": "ToPnl-",
+    "source": {
+      "fcquery": "emb-in-text-source-panel",
+      "mode": SearchModes.grepSearch,
 
-    "findGrepPreferences": {
-      "findWhat": "\\[\\[\\d{1,10}(.*?\\d{1,4}.*?)\\]\\]",
+      "findGrepPreferences": {
+        "findWhat": "\\&\\&(\\d{1,10}.*?\\d{1,10})\\&\\&",
+      },
+      "changeGrepPreferences": {
+        "changeTo": "($1)"
+      },
+      "parstyle": null,
+      "charstyle": null
     },
-    "changeGrepPreferences": {
-      "changeTo": "$1"
-    },
-    "parstyle": null,
-    "charstyle": null,
-  },
-  "target": {
-    "fcquery": "emb-target-cross",
-    "mode": SearchModes.grepSearch,
+    "target": {
+      "fcquery": "emb-in-text-target-panel",
+      "mode": SearchModes.grepSearch,
 
-    "findGrepPreferences": {
-      "findWhat": "\\{\\{\\d{1,10}(.*?\\d{1,4}.*?)\\}\\}",
+      "findGrepPreferences": {
+        "findWhat": "\\&\\|(\\d{1,10}.*?\\d{1,10})\\|\\&",
+      },
+      "changeGrepPreferences": {
+        "changeTo": "$1"
+      },
+      "parstyle": null,
+      "charstyle": null,
+    }
+  }, {
+    "prefix": "ToPnlRef-",
+    "name":"Find sub panel text to panel reference",
+    "source": {
+      "fcquery": "emb-sub-text-source-panel",
+      "mode": SearchModes.grepSearch,
+
+      "findGrepPreferences": {
+        "findWhat": "\\&\\|(\\d{1,10}.*?\\d{1,10})\\|\\&",
+      },
+      "changeGrepPreferences": {
+        "changeTo": "$1"
+      },
+      "parstyle": null,
+      "charstyle": null
     },
-    "changeGrepPreferences": {
-      "changeTo": "$1"
-    },
-    "parstyle": null,
-    "charstyle": null
-  },
+    "target": {
+      "fcquery": "emb-sub-text-target-panel",
+      "mode": SearchModes.grepSearch,
+
+      "findGrepPreferences": {
+        "findWhat": "\\%\\%(\\d{1,10}.*?\\d{1,10})\\%\\%",
+      },
+      "changeGrepPreferences": {
+        "changeTo": "$1"
+      },
+      "parstyle": null,
+      "charstyle": null
+    }
+  }],
   "hyperlinks": {
     "prefix": "LYNK-",
     "appearance": HyperlinkAppearanceHighlight.NONE
@@ -484,55 +510,134 @@ var hyperlinker = function(d, data, slice, prefix) {
 
   return res;
 };
-
 /**
  * The main function to execute
  * everything else is separated into modules
  * @return {nothing}
  */
+
 var main = function() {
-  trainer(settings.source);
-  if (DEBUG) {
-    $.writeln("Trained source");
+  for (var t = 0; t < settings.queries.length; t++) {
+    trainer(settings.queries[t].source);
+    if (DEBUG) {
+      $.writeln("Trained source for query No " + (t + 1));
+    }
+
+    trainer(settings.queries[t].target);
+    if (DEBUG) {
+      $.writeln("Trained target for query No " + (t + 1));
+    }
   }
-  trainer(settings.target);
-  if (DEBUG) {
-    $.writeln("Trained target");
-  }
+
   if (app.documents.length > 0) {
     var doc = app.activeDocument;
     if (doc.saved !== true) {
       alert("Your document was never saved.\nPlease save it at least once so I can create the log file for you. Aborting script execution ");
       return;
     }
-
     if (doc.modified === true) {
       var saveit = confirm("Your document was modified before the script execution. Do you want me to save these changes before proceeding? ");
       if (saveit === true) {
         doc.save();
       }
     }
-    var sources = searcher(doc, settings.source.fcquery, settings.source.mode, null, null);
-    var targets = searcher(doc, settings.target.fcquery, settings.target.mode, null, null);
-
-    var data = {
-      "src": sources,
-      "tgt": targets
-    };
+    // first run
 
     if (DEBUG) {
-      $.writeln(data.src.length + " " + data.tgt.length);
+      $.writeln("Running first search and hyperlink build\n------------------------");
     }
-    // alert("Done\n" + data);
-    // $.writeln(data);
+    var results = [];
+    var data = [];
+    var sources = [];
+    var targets = [];
     var del = settings.delimiter;
-    var result = hyperlinker(doc, data);
-    var str = "#Overview: " + del + "Found: " + del + "Sources: " + data.src.length + del + "Targets: " + data.tgt.length + del + del;
+    var slice = [{
+      "src": 3,
+      "tgt": 2
+    }, {
+      "src": 2,
+      "tgt": 2
+    }];
 
-    cleaner(doc, data.src, result.unused_sources, settings.source.fcquery, settings.source.mode,null,null);
-    cleaner(doc, data.tgt, result.unused_targets, settings.target.fcquery, settings.target.mode,null,null);
+    for (var q = 0; q < settings.queries.length; q++) {
+      sources.push(
+        searcher(
+          doc,
+          settings.queries[q].source.fcquery,
+          settings.queries[q].source.mode
+        )
+      );
+      targets.push(
+        searcher(
+          doc,
+          settings.queries[q].target.fcquery,
+          settings.queries[q].target.mode
+        )
+      );
+      data.push({
+        "src": sources[q],
+        "tgt": targets[q]
+      });
+      if (DEBUG) {
+        $.writeln(data[q].src.length + " " + data[q].tgt.length);
+      }
+
+      var prefix = settings.hyperlinks.prefix + settings.queries[q].prefix;
+
+      results.push(
+        hyperlinker(
+          doc,
+          data[q],
+          slice[q],
+          prefix
+        )
+      );
+
+      if (DEBUG) {
+        $.writeln(results[q].toSource());
+      }
+      if (DEBUG) {
+        $.writeln("Running search and hyperlink build No: " + (q + 1) + "\n------------------------");
+      }
+    }
+
+    // clean up
+    for (var i = 0; i < data.length; i++) {
+
+      cleaner(
+        doc,
+        data[i].src,
+        results[i].unused_sources,
+        settings.queries[i].source.fcquery,
+        settings.queries[i].source.mode,
+        null,
+        settings.queries[i].source.charstyle
+      );
+
+      cleaner(
+        doc,
+        data[i].tgt,
+        results[i].unused_targets,
+        settings.queries[i].target.fcquery,
+        settings.queries[i].target.mode,
+        null,
+        settings.queries[i].target.charstyle
+      );
+    }
+
+    var str = "#Overview: " + del +
+      "Found: " + del + "Sources: " + data[0].src.length + del + "Targets: " + data[0].tgt.length + del + del + "Sources: " + data[1].src.length + del + "Targets: " + data[1].tgt.length + del + del;
+
     var line = del + "---------------------------------" + del;
-    logger(doc, str + result.unused_src_report + del + result.unused_tgt_report + line + del + result.report);
+    var res = str +
+      results[0].unused_src_report + del +
+      results[0].unused_tgt_report + line + del;
+
+    res += results[1].unused_src_report + del +
+      results[1].unused_tgt_report + line + del +
+      results[0].report + results[1].report;
+
+    logger(doc, res);
 
   } else {
 

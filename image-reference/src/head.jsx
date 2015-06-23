@@ -29,6 +29,7 @@
  */
 
 // ##Version history
+// 0.4.4 update query
 // 0.4.3 added jumptotext or not
 // 0.4.2 works
 // 0.4.1 logger creates folder

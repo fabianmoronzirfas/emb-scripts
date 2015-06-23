@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! table-reference.jsx - v0.2.1 - 2015-04-27 */
+/*! table-reference.jsx - v0.2.2 - 2015-06-23 */
 /*
  * table-reference.jsx
  * creates hyperlinks from patterns
@@ -32,6 +32,7 @@
  */
 
 // ##Version history
+// 0.2.2 update query
 // 0.2.1 added jumptotext or not
 // 0.2.0 works fine
 // 0.1.0 initial version based on image-reference.jsx
@@ -58,7 +59,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\$\\$\\(\\d{1,10}(.*?\\d{1,10})\\)\\$\\$",
+        "findWhat": "\\$\\$(\\d{1,10}.*?\\d{1,10}\\)\\$\\$",
       },
       "changeGrepPreferences": {
         "changeTo": "($1)"
@@ -71,7 +72,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\$\\$\\d{1,10}(.*?\\d{1,10})\\$\\$",
+        "findWhat": "\\$\\|(\\d{1,10}.*?\\d{1,10})\\|\\$",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -87,7 +88,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\$\\$\\d{1,10}(.*?\\d{1,10})\\$\\$",
+        "findWhat": "\\$\\|(\\d{1,10}.*?\\d{1,10})\\|\\$",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -100,7 +101,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "==\\d{1,10}.*?(\\d{1,10})==",
+        "findWhat": "==(\\d{1,10}.*?\\d{1,10})==",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -505,7 +506,6 @@ var hl_builder = function(d, data, prefix, slice) {
  * @return {Object}         pass through the result of the hl_builder()
  */
 var hyperlinker = function(d, data, slice, prefix) {
-  // TODO Give new Hyperlinks names so I can identify them as mine
   // remove all existing hyperlinks
   // d.hyperlinks.everyItem().remove();
   if (prefix === null || prefix === undefined) {

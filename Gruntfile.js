@@ -9,6 +9,8 @@ module.exports = function(grunt) {
   require("load-grunt-tasks")(grunt);
 
   grunt.initConfig({
+    clean:["cross-reference/zips/*.zip","footnotes/zips/*.zip","image-reference/zips/*.zip","panel-reference/zips/*.zip","table-reference/zips/*.zip"],
+
     hub: {
       all: {
         src: ["*/Gruntfile.js"],
@@ -31,5 +33,6 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask("default", ["hub","copy:main"]);
+  grunt.registerTask("default", ["clean","hub","copy:main"]);
 };
+

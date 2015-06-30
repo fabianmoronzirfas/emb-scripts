@@ -9,7 +9,7 @@ module.exports = function(grunt) {
   require("load-grunt-tasks")(grunt);
 
   grunt.initConfig({
-    clean:["cross-reference/zips/*.zip","footnotes/zips/*.zip","image-reference/zips/*.zip","panel-reference/zips/*.zip","table-reference/zips/*.zip"],
+    clean:["release/*.zip","cross-reference/zips/*.zip","footnotes/zips/*.zip","image-reference/zips/*.zip","panel-reference/zips/*.zip","table-reference/zips/*.zip"],
 
     hub: {
       all: {

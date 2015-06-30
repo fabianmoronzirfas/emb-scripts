@@ -16,3 +16,4 @@ pdfs
 *.idlk
 tmp/*
 *tmp*
+*script-logs*

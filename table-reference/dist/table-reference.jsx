@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! table-reference.jsx - v0.2.2 - 2015-06-23 */
+/*! table-reference.jsx - v0.2.3 - 2015-06-30 */
 /*
  * table-reference.jsx
  * creates hyperlinks from patterns
@@ -32,6 +32,7 @@
  */
 
 // ##Version history
+// 0.2.3 update query
 // 0.2.2 update query
 // 0.2.1 added jumptotext or not
 // 0.2.0 works fine
@@ -57,12 +58,11 @@ var settings = {
     "source": {
       "fcquery": "emb-in-text-source-table",
       "mode": SearchModes.grepSearch,
-
       "findGrepPreferences": {
-        "findWhat": "\\$\\$(\\d{1,10}.*?\\d{1,10}\\)\\$\\$",
+        "findWhat": "\\$\\$\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\$\\$",
       },
       "changeGrepPreferences": {
-        "changeTo": "($1)"
+        "changeTo": "$1"
       },
       "parstyle": null,
       "charstyle": null
@@ -72,7 +72,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\$\\|(\\d{1,10}.*?\\d{1,10})\\|\\$",
+        "findWhat": "\\$\\|\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\|\\$",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -88,7 +88,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\$\\|(\\d{1,10}.*?\\d{1,10})\\|\\$",
+        "findWhat": "\\$\\|\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\|\\$",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -101,7 +101,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "==(\\d{1,10}.*?\\d{1,10})==",
+        "findWhat": "==\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)==",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -562,7 +562,7 @@ var main = function() {
     var targets = [];
     var del = settings.delimiter;
     var slice = [{
-      "src": 3,
+      "src": 2,
       "tgt": 2
     }, {
       "src": 2,

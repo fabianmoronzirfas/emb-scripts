@@ -40,7 +40,7 @@ var main = function() {
     var targets = [];
     var del = settings.delimiter;
     var slice = [{
-      "src": 3,
+      "src": 2,
       "tgt": 2
     }, {
       "src": 2,

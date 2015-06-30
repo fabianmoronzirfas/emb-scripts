@@ -1,7 +1,7 @@
 {
   "name": "cross-reference",
   "title": "my cool script",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "repository": {
     "type": "git",
     "url": "git@github.com:fabiantheblind/emb-scripts.git"

@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! panel-reference.jsx - v0.1.0 - 2015-06-23 */
+/*! panel-reference.jsx - v0.1.1 - 2015-06-30 */
 /*
  * table-reference.jsx
  * creates hyperlinks from patterns
@@ -25,13 +25,14 @@
  */
 
 // ##Version history
+// 0.1.1 update query
 // 0.1.0 initial version based on table-reference.jsx
 //
 
 
 // #target "indesign-8" // jshint ignore:line
 
-var DEBUG = true;
+var DEBUG = false;
 var now = new Date();
 var formatted_date = now.getUTCFullYear().toString() + "-" + (now.getUTCMonth() + 1).toString() + "-" + now.getUTCDate().toString();
 var formatted_time = now.getHours().toString()+ "-" + now.getMinutes().toString() + "-" +now.getSeconds().toString();
@@ -49,10 +50,10 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\&\\&(\\d{1,10}.*?\\d{1,10})\\&\\&",
+        "findWhat": "\\&\\&\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\&\\&",
       },
       "changeGrepPreferences": {
-        "changeTo": "($1)"
+        "changeTo": "$1"
       },
       "parstyle": null,
       "charstyle": null
@@ -62,7 +63,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\&\\|(\\d{1,10}.*?\\d{1,10})\\|\\&",
+        "findWhat": "\\&\\|\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\|\\&",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -78,7 +79,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\&\\|(\\d{1,10}.*?\\d{1,10})\\|\\&",
+        "findWhat": "\\&\\|\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\|\\&",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -91,7 +92,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\%\\%(\\d{1,10}.*?\\d{1,10})\\%\\%",
+        "findWhat": "\\%\\%\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\%\\%",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -552,7 +553,7 @@ var main = function() {
     var targets = [];
     var del = settings.delimiter;
     var slice = [{
-      "src": 3,
+      "src": 2,
       "tgt": 2
     }, {
       "src": 2,

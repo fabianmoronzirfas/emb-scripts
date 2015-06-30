@@ -12,7 +12,7 @@ var settings = {
     "mode": SearchModes.grepSearch,
 
     "findGrepPreferences": {
-      "findWhat": "\\[\\[\\d{1,10}(.*?\\d{1,4}.*?)\\]\\]",
+      "findWhat": "\\[\\[\\d{1,10}[[:space:]]*(.*?\\d{1,10}.*?)\\]\\]",
     },
     "changeGrepPreferences": {
       "changeTo": "$1"
@@ -23,9 +23,8 @@ var settings = {
   "target": {
     "fcquery": "emb-target-cross",
     "mode": SearchModes.grepSearch,
-
     "findGrepPreferences": {
-      "findWhat": "\\{\\{\\d{1,10}(.*?\\d{1,4}.*?)\\}\\}",
+      "findWhat": "\\{\\{\\d{1,10}[[:space:]]*(.*?\\d{1,10}.*?)\\}\\}",
     },
     "changeGrepPreferences": {
       "changeTo": "$1"

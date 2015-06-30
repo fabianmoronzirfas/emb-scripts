@@ -11,10 +11,10 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\&\\&(\\d{1,10}.*?\\d{1,10})\\&\\&",
+        "findWhat": "\\&\\&\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\&\\&",
       },
       "changeGrepPreferences": {
-        "changeTo": "($1)"
+        "changeTo": "$1"
       },
       "parstyle": null,
       "charstyle": null
@@ -24,7 +24,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\&\\|(\\d{1,10}.*?\\d{1,10})\\|\\&",
+        "findWhat": "\\&\\|\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\|\\&",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -40,7 +40,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\&\\|(\\d{1,10}.*?\\d{1,10})\\|\\&",
+        "findWhat": "\\&\\|\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\|\\&",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -53,7 +53,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\%\\%(\\d{1,10}.*?\\d{1,10})\\%\\%",
+        "findWhat": "\\%\\%\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\%\\%",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"

@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! footnotes.jsx - v0.2.2 - 2015-06-23 */
+/*! footnotes.jsx - v0.2.2 - 2015-06-30 */
 /*
  * footnotes
  * https://github.com/fabiantheblind/emb-scripts

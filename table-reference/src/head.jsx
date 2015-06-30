@@ -29,6 +29,7 @@
  */
 
 // ##Version history
+// 0.2.3 update query
 // 0.2.2 update query
 // 0.2.1 added jumptotext or not
 // 0.2.0 works fine

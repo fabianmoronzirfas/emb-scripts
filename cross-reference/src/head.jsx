@@ -18,6 +18,7 @@
  */
 
 // ##Version history
+// 0.4.4 update query
 // 0.4.3 update query
 // 0.4.2 added jumptotext or not
 // 0.4.1 update to latest cleaner module

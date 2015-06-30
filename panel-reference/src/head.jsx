@@ -22,6 +22,7 @@
  */
 
 // ##Version history
+// 0.1.1 update query
 // 0.1.0 initial version based on table-reference.jsx
 //
 

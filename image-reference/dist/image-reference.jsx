@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! image-reference.jsx - v0.4.4 - 2015-06-23 */
+/*! image-reference.jsx - v0.4.5 - 2015-06-30 */
 /*
  * image-reference.jsx
  * creates hyperlinks from patterns
@@ -32,6 +32,7 @@
  */
 
 // ##Version history
+// 0.4.5 update query
 // 0.4.4 update query
 // 0.4.3 added jumptotext or not
 // 0.4.2 works
@@ -65,10 +66,10 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "##(\\d{1,10}.*?\\d{1,10})##",
+        "findWhat": "##\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)##",
       },
       "changeGrepPreferences": {
-        "changeTo": "($1)"
+        "changeTo": "$1"
       },
       "parstyle": null,
       "charstyle": null
@@ -78,7 +79,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "#\\|(\\d{1,10}.*?\\d{1,10})\\|#",
+        "findWhat": "#\\|\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\|#",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -93,7 +94,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "#\\|(\\d{1,10}.*?\\d{1,10})\\|#",
+        "findWhat": "#\\|\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\|#",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -106,7 +107,7 @@ var settings = {
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
-        "findWhat": "\\|\\|(\\d{1,10}.*?\\d{1,10})\\|\\|",
+        "findWhat": "\\|\\|\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\|\\|",
       },
       "changeGrepPreferences": {
         "changeTo": "$1"
@@ -567,7 +568,7 @@ var main = function() {
     var targets = [];
     var del = settings.delimiter;
     var slice = [{
-      "src": 3,
+      "src": 2,
       "tgt": 2
     }, {
       "src": 2,

@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! cross-reference.jsx - v0.4.3 - 2015-06-23 */
+/*! cross-reference.jsx - v0.4.4 - 2015-06-30 */
 /*
  * cross-reference.jsx
  * creates hyperlinks from patterns
@@ -21,6 +21,7 @@
  */
 
 // ##Version history
+// 0.4.4 update query
 // 0.4.3 update query
 // 0.4.2 added jumptotext or not
 // 0.4.1 update to latest cleaner module
@@ -53,7 +54,7 @@ var settings = {
     "mode": SearchModes.grepSearch,
 
     "findGrepPreferences": {
-      "findWhat": "\\[\\[\\d{1,10}(.*?\\d{1,4}.*?)\\]\\]",
+      "findWhat": "\\[\\[\\d{1,10}[[:space:]]*(.*?\\d{1,10}.*?)\\]\\]",
     },
     "changeGrepPreferences": {
       "changeTo": "$1"
@@ -64,9 +65,8 @@ var settings = {
   "target": {
     "fcquery": "emb-target-cross",
     "mode": SearchModes.grepSearch,
-
     "findGrepPreferences": {
-      "findWhat": "\\{\\{\\d{1,10}(.*?\\d{1,4}.*?)\\}\\}",
+      "findWhat": "\\{\\{\\d{1,10}[[:space:]]*(.*?\\d{1,10}.*?)\\}\\}",
     },
     "changeGrepPreferences": {
       "changeTo": "$1"

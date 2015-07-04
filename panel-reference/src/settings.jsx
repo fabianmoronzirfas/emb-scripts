@@ -7,7 +7,7 @@ var settings = {
     "name":"Find panel text to panel sub text",
     "prefix": "ToPnl-",
     "source": {
-      "fcquery": "emb-in-text-source-panel",
+      "fcquery": "01-emb-panel-in-text-source",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -20,7 +20,7 @@ var settings = {
       "charstyle": null
     },
     "target": {
-      "fcquery": "emb-in-text-target-panel",
+      "fcquery": "02-emb-panel-in-text-target",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -36,7 +36,7 @@ var settings = {
     "prefix": "ToPnlRef-",
     "name":"Find sub panel text to panel reference",
     "source": {
-      "fcquery": "emb-sub-text-source-panel",
+      "fcquery": "03-emb-panel-sub-text-source",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -49,7 +49,7 @@ var settings = {
       "charstyle": null
     },
     "target": {
-      "fcquery": "emb-sub-text-target-panel",
+      "fcquery": "04-emb-panel-sub-text-target",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {

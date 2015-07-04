@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! panel-reference.jsx - v0.1.1 - 2015-06-30 */
+/*! panel-reference.jsx - v0.1.2 - 2015-07-04 */
 /*
  * table-reference.jsx
  * creates hyperlinks from patterns
@@ -46,7 +46,7 @@ var settings = {
     "name":"Find panel text to panel sub text",
     "prefix": "ToPnl-",
     "source": {
-      "fcquery": "emb-in-text-source-panel",
+      "fcquery": "01-emb-panel-in-text-source",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -59,7 +59,7 @@ var settings = {
       "charstyle": null
     },
     "target": {
-      "fcquery": "emb-in-text-target-panel",
+      "fcquery": "02-emb-panel-in-text-target",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -75,7 +75,7 @@ var settings = {
     "prefix": "ToPnlRef-",
     "name":"Find sub panel text to panel reference",
     "source": {
-      "fcquery": "emb-sub-text-source-panel",
+      "fcquery": "03-emb-panel-sub-text-source",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -88,7 +88,7 @@ var settings = {
       "charstyle": null
     },
     "target": {
-      "fcquery": "emb-sub-text-target-panel",
+      "fcquery": "04-emb-panel-sub-text-target",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -413,6 +413,8 @@ var hl_builder = function(d, data, prefix, slice) {
     report += "## " + data.tgt[i].contents + del + del;
 
     var dest = null;
+    // try{
+
     if (settings.jumptotext === true) {
       // jumps to text
       dest = d.hyperlinkTextDestinations.add(data.tgt[i]);
@@ -432,6 +434,12 @@ var hl_builder = function(d, data, prefix, slice) {
       });
 
     }
+    // }catch(e){
+    //   var str = "This hyperlink text destinations is already in use\n"+data.tgt[i].contents+"\nSkipping...";
+    //   alert(str);
+    //   report += str;
+    //   continue;
+    // }
 
     dest.name = prefix + clear_tgt_content + formatted_date + " " + formatted_time + padder(i, 4, "-");
 
@@ -452,17 +460,31 @@ var hl_builder = function(d, data, prefix, slice) {
         if (DEBUG) {
           $.writeln("found a match src: " + clear_src_content + " tgt: " + clear_tgt_content);
         }
-
-
         report += data.src[j].contents + " --> " + data.tgt[i].contents + del;
+        // try{
+
         var src = d.hyperlinkTextSources.add(data.src[j]);
+        // }catch(e){
+        //   var str = "This text source is already in use by another hyperlink\n" + data.src[j].contents;
+        //   alert(str);
+        //   report+=str;
+        //   continue;
+        // }
         src.name = prefix + clear_src_content + formatted_date + " " + formatted_time + padder(j, 4, "-");
+        // try {
+
         var hl = d.hyperlinks.add({
           source: src,
           destination: dest,
           highlight: settings.hyperlinks.appearance,
-          name: prefix + clear_src_content + padder(j, 4, "-")
+          name: prefix + clear_src_content + String(i) + padder(j, 4, "-")
         });
+        // }catch(e){
+        //   var str = "This text is already in use by another hyperlink:\nSource: " + src.sourceText.contents +"\nTarget: "+dest.destinationText.contents ;
+        //   alert(str);
+        //   report+=str;
+        //   continue;
+        // }
 
         // match
       }

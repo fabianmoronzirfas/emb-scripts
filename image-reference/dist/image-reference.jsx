@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! image-reference.jsx - v0.4.5 - 2015-06-30 */
+/*! image-reference.jsx - v0.4.6 - 2015-07-04 */
 /*
  * image-reference.jsx
  * creates hyperlinks from patterns
@@ -48,7 +48,7 @@
 
 // #target "indesign-8" // jshint ignore:line
 
-var DEBUG = false;
+var DEBUG = true;
 var now = new Date();
 var formatted_date = now.getUTCFullYear().toString() + "-" + (now.getUTCMonth() + 1).toString() + "-" + now.getUTCDate().toString();
 var formatted_time = now.getHours().toString()+ "-" + now.getMinutes().toString() + "-" +now.getSeconds().toString();
@@ -62,7 +62,7 @@ var settings = {
   "queries": [{
     "prefix": "ToImg-",
     "source": {
-      "fcquery": "emb-in-text-source-img",
+      "fcquery": "01-emb-img-in-text-source",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -75,7 +75,7 @@ var settings = {
       "charstyle": null
     },
     "target": {
-      "fcquery": "emb-in-text-target-img",
+      "fcquery": "02-emb-img-in-text-target",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -90,7 +90,7 @@ var settings = {
   }, {
     "prefix": "ToRef-",
     "source": {
-      "fcquery": "emb-sub-img-txt-source-img",
+      "fcquery": "03-emb-img-sub-txt-source",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -103,7 +103,7 @@ var settings = {
       "charstyle": "Bildlegende Abb-Nr"
     },
     "target": {
-      "fcquery": "emb-img-ref-target-img",
+      "fcquery": "04-emb-img-ref-target",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -428,7 +428,7 @@ var hl_builder = function(d, data, prefix, slice) {
     report += "## " + data.tgt[i].contents + del + del;
 
     var dest = null;
-    try{
+    // try{
 
     if (settings.jumptotext === true) {
       // jumps to text
@@ -449,12 +449,12 @@ var hl_builder = function(d, data, prefix, slice) {
       });
 
     }
-    }catch(e){
-      var str = "This hyperlink text destinations is already in use\n"+data.tgt[i].contents+"\nSkipping...";
-      alert(str);
-      report += str;
-      continue;
-    }
+    // }catch(e){
+    //   var str = "This hyperlink text destinations is already in use\n"+data.tgt[i].contents+"\nSkipping...";
+    //   alert(str);
+    //   report += str;
+    //   continue;
+    // }
 
     dest.name = prefix + clear_tgt_content + formatted_date + " " + formatted_time + padder(i, 4, "-");
 
@@ -476,30 +476,30 @@ var hl_builder = function(d, data, prefix, slice) {
           $.writeln("found a match src: " + clear_src_content + " tgt: " + clear_tgt_content);
         }
         report += data.src[j].contents + " --> " + data.tgt[i].contents + del;
-        try{
+        // try{
 
         var src = d.hyperlinkTextSources.add(data.src[j]);
-        }catch(e){
-          var str = "This text source is already in use by another hyperlink\n" + data.src[j].contents;
-          alert(str);
-          report+=str;
-          continue;
-        }
+        // }catch(e){
+        //   var str = "This text source is already in use by another hyperlink\n" + data.src[j].contents;
+        //   alert(str);
+        //   report+=str;
+        //   continue;
+        // }
         src.name = prefix + clear_src_content + formatted_date + " " + formatted_time + padder(j, 4, "-");
-        try {
+        // try {
 
         var hl = d.hyperlinks.add({
           source: src,
           destination: dest,
           highlight: settings.hyperlinks.appearance,
-          name: prefix + clear_src_content + padder(j, 4, "-")
+          name: prefix + clear_src_content + String(i) + padder(j, 4, "-")
         });
-        }catch(e){
-          var str = "This text is already in use by another hyperlink:\nSource: " + src.sourceText.contents +"\nTarget: "+dest.destinationText.contents ;
-          alert(str);
-          report+=str;
-          continue;
-        }
+        // }catch(e){
+        //   var str = "This text is already in use by another hyperlink:\nSource: " + src.sourceText.contents +"\nTarget: "+dest.destinationText.contents ;
+        //   alert(str);
+        //   report+=str;
+        //   continue;
+        // }
 
         // match
       }

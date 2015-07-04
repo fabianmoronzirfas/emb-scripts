@@ -7,7 +7,7 @@ var settings = {
   "queries": [{
     "prefix": "ToImg-",
     "source": {
-      "fcquery": "emb-in-text-source-img",
+      "fcquery": "01-emb-img-in-text-source",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -20,7 +20,7 @@ var settings = {
       "charstyle": null
     },
     "target": {
-      "fcquery": "emb-in-text-target-img",
+      "fcquery": "02-emb-img-in-text-target",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -35,7 +35,7 @@ var settings = {
   }, {
     "prefix": "ToRef-",
     "source": {
-      "fcquery": "emb-sub-img-txt-source-img",
+      "fcquery": "03-emb-img-sub-txt-source",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -48,7 +48,7 @@ var settings = {
       "charstyle": "Bildlegende Abb-Nr"
     },
     "target": {
-      "fcquery": "emb-img-ref-target-img",
+      "fcquery": "04-emb-img-ref-target",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {

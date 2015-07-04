@@ -7,7 +7,7 @@ var settings = {
     "name":"Find text to table sub text",
     "prefix": "ToTbl-",
     "source": {
-      "fcquery": "emb-in-text-source-table",
+      "fcquery": "01-emb-table-in-text-source",
       "mode": SearchModes.grepSearch,
       "findGrepPreferences": {
         "findWhat": "\\$\\$\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\$\\$",
@@ -19,7 +19,7 @@ var settings = {
       "charstyle": null
     },
     "target": {
-      "fcquery": "emb-in-text-target-table",
+      "fcquery": "02-emb-table-in-text-target",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -35,7 +35,7 @@ var settings = {
     "prefix": "ToTblRef-",
     "name":"Find sub table text to table reference",
     "source": {
-      "fcquery": "emb-sub-text-source-table",
+      "fcquery": "03-emb-table-sub-text-source",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {
@@ -48,7 +48,7 @@ var settings = {
       "charstyle": null
     },
     "target": {
-      "fcquery": "emb-sub-text-target-table",
+      "fcquery": "04-emb-table-sub-text-target",
       "mode": SearchModes.grepSearch,
 
       "findGrepPreferences": {

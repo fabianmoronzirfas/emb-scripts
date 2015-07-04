@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! footnotes.jsx - v0.2.2 - 2015-07-04 */
+/*! footnotes.jsx - v0.2.2 - 2015-06-30 */
 /*
  * footnotes
  * https://github.com/fabiantheblind/emb-scripts
@@ -18,7 +18,7 @@
 //
 // 0.1.0 works but with issues
 //
-var DEBUG = false;
+var DEBUG = true;
 var now = new Date();
 var formatted_date = now.getUTCFullYear().toString() + "-" + (now.getUTCMonth() + 1).toString() + "-" + now.getUTCDate().toString();
 var formatted_time = now.getHours().toString()+ "-" + now.getMinutes().toString() + "-" +now.getSeconds().toString();

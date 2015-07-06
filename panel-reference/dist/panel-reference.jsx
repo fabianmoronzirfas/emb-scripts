@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! panel-reference.jsx - v0.1.2 - 2015-07-04 */
+/*! panel-reference.jsx - v0.1.2 - 2015-07-06 */
 /*
  * table-reference.jsx
  * creates hyperlinks from patterns
@@ -25,6 +25,7 @@
  */
 
 // ##Version history
+// 0.1.2 mulitple sources
 // 0.1.1 update query
 // 0.1.0 initial version based on table-reference.jsx
 //

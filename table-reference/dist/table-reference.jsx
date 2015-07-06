@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! table-reference.jsx - v0.2.4 - 2015-07-04 */
+/*! table-reference.jsx - v0.2.4 - 2015-07-06 */
 /*
  * table-reference.jsx
  * creates hyperlinks from patterns
@@ -32,6 +32,7 @@
  */
 
 // ##Version history
+// 0.2.4 multiple sources
 // 0.2.3 update query
 // 0.2.2 update query
 // 0.2.1 added jumptotext or not

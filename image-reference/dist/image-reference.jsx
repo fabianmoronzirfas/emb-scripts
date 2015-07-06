@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! image-reference.jsx - v0.4.6 - 2015-07-04 */
+/*! image-reference.jsx - v0.4.6 - 2015-07-06 */
 /*
  * image-reference.jsx
  * creates hyperlinks from patterns
@@ -32,6 +32,7 @@
  */
 
 // ##Version history
+// 0.4.6 multiple sources
 // 0.4.5 update query
 // 0.4.4 update query
 // 0.4.3 added jumptotext or not

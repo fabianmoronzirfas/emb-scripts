@@ -29,6 +29,7 @@
  */
 
 // ##Version history
+// 0.2.5 add security check for to many targets
 // 0.2.4 multiple sources
 // 0.2.3 update query
 // 0.2.2 update query

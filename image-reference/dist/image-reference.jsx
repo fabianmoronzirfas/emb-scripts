@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! image-reference.jsx - v0.4.6 - 2015-07-06 */
+/*! image-reference.jsx - v0.4.7 - 2015-07-07 */
 /*
  * image-reference.jsx
  * creates hyperlinks from patterns
@@ -32,6 +32,7 @@
  */
 
 // ##Version history
+// 0.4.7 add security check for to many targets
 // 0.4.6 multiple sources
 // 0.4.5 update query
 // 0.4.4 update query
@@ -54,69 +55,70 @@ var now = new Date();
 var formatted_date = now.getUTCFullYear().toString() + "-" + (now.getUTCMonth() + 1).toString() + "-" + now.getUTCDate().toString();
 var formatted_time = now.getHours().toString()+ "-" + now.getMinutes().toString() + "-" +now.getSeconds().toString();
 
-
 var settings = {
-  "jumptotext":true,
+  "jumptotext": true,
   "delimiter": null,
   "linefeeds": null,
   "rewirte": true,
   "queries": [{
-    "prefix": "ToImg-",
-    "source": {
-      "fcquery": "01-emb-img-in-text-source",
-      "mode": SearchModes.grepSearch,
+      "prefix": "ToImg-",
+      "source": {
+        "fcquery": "01-emb-img-in-text-source",
+        "mode": SearchModes.grepSearch,
 
-      "findGrepPreferences": {
-        "findWhat": "##\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)##",
+        "findGrepPreferences": {
+          "findWhat": "##\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)##",
+        },
+        "changeGrepPreferences": {
+          "changeTo": "$1"
+        },
+        "parstyle": null,
+        "charstyle": null
       },
-      "changeGrepPreferences": {
-        "changeTo": "$1"
-      },
-      "parstyle": null,
-      "charstyle": null
-    },
-    "target": {
-      "fcquery": "02-emb-img-in-text-target",
-      "mode": SearchModes.grepSearch,
+      "target": {
+        "fcquery": "02-emb-img-in-text-target",
+        "mode": SearchModes.grepSearch,
 
-      "findGrepPreferences": {
-        "findWhat": "#\\|\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\|#",
+        "findGrepPreferences": {
+          "findWhat": "#\\|\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\|#",
+        },
+        "changeGrepPreferences": {
+          "changeTo": "$1"
+        },
+        "parstyle": null,
+        "charstyle": null,
+      }
+    }, {
+      "prefix": "ToRef-",
+      "source": {
+        "fcquery": "03-emb-img-sub-txt-source",
+        "mode": SearchModes.grepSearch,
+
+        "findGrepPreferences": {
+          "findWhat": "#\\|\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\|#",
+        },
+        "changeGrepPreferences": {
+          "changeTo": "$1"
+        },
+        "parstyle": null,
+        "charstyle": "Bildlegende Abb-Nr"
       },
-      "changeGrepPreferences": {
-        "changeTo": "$1"
-      },
-      "parstyle": null,
-      "charstyle": null,
+      "target": {
+        "fcquery": "04-emb-img-ref-target",
+        "mode": SearchModes.grepSearch,
+
+        "findGrepPreferences": {
+          "findWhat": "\\|\\|\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\|\\|",
+        },
+        "changeGrepPreferences": {
+          "changeTo": "$1"
+        },
+        "parstyle": null,
+        "charstyle": "Bildnachweis Abb-Nr"
+      }
     }
-  }, {
-    "prefix": "ToRef-",
-    "source": {
-      "fcquery": "03-emb-img-sub-txt-source",
-      "mode": SearchModes.grepSearch,
 
-      "findGrepPreferences": {
-        "findWhat": "#\\|\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\|#",
-      },
-      "changeGrepPreferences": {
-        "changeTo": "$1"
-      },
-      "parstyle": null,
-      "charstyle": "Bildlegende Abb-Nr"
-    },
-    "target": {
-      "fcquery": "04-emb-img-ref-target",
-      "mode": SearchModes.grepSearch,
-
-      "findGrepPreferences": {
-        "findWhat": "\\|\\|\\d{1,10}-([0-9]{1,10}+\\.?[0-9]{1,10}.*?|[0-9]{1,10}.*?)\\|\\|",
-      },
-      "changeGrepPreferences": {
-        "changeTo": "$1"
-      },
-      "parstyle": null,
-      "charstyle": "Bildnachweis Abb-Nr"
-    }
-  }],
+  ],
   "hyperlinks": {
     "prefix": "LYNK-",
     "appearance": HyperlinkAppearanceHighlight.NONE
@@ -418,13 +420,55 @@ var hl_builder = function(d, data, prefix, slice) {
   for (var m = 0; m < data.tgt.length; m++) {
     unused_targets.push(false);
   }
+
+// The
+// YOU DID NOT WORK RIGHT CHECK
+  var cleantargets_report = [];
+  var targets_not_clean = false;
+  var alltargets = [];
+  for(var n = 0; n < data.tgt.length;n++){
+    $.writeln(data.tgt[n].contents);
+    alltargets.push(data.tgt[n].contents);
+    for(var o = 0; o < data.tgt.length;o++){
+      if(n !== o){
+        if(data.tgt[n].contents === data.tgt[o].contents){
+          targets_not_clean = true;
+          var character = data.tgt[n].characters[0];
+          var textframe =  character.parentTextFrames[0];
+          var pg;
+          try{
+            pg = textframe.parentPage.name;
+          }catch(e){
+            pg = null;
+          }
+          var str = (pg === null)  ? "Target \"" + data.tgt[n].contents +"\" is a duplicate! The containing textFrame is somewhere in the nimbus of your document" :"Target \"" + data.tgt[n].contents +"\" on page " + pg +" is a duplicate!";
+          cleantargets_report.push(str);
+          // alert(data.tgt[n].constructor.name);
+        }
+        }else{
+          // dont do enything when we are at the same index
+        }
+    }
+  }
+
+  if(targets_not_clean === true){
+    var str_tgts = alltargets.join("\n");
+    var str_report = cleantargets_report.join("\n");
+    alert("You have to many targets. I can't process them. Please use the upcoming report to clean your document");
+    logger(d, "ERROR REPORT DUPLICATE TARGETS"+del+"All targets:"+del+ str_tgts + del + "DUPLICATES:" + del+ str_report);
+    // abort write log!
+    exit();
+  }
+
+
+  if(DEBUG){$.writeln("Looping Targets start");}
   for (var i = 0; i < data.tgt.length; i++) {
     var tgt_has_src = false;
     // if(DEBUG) $.writeln(data.tgt[i].contents);
     var clear_tgt_content = data.tgt[i].contents.slice(slice.tgt, -slice.tgt);
     // var clear_tgt_content = string_cleaner(tmp_tgt);
     if (DEBUG) {
-      $.writeln(clear_tgt_content);
+      $.writeln("Target: " + clear_tgt_content);
     }
     report += "## " + data.tgt[i].contents + del + del;
 
@@ -459,16 +503,16 @@ var hl_builder = function(d, data, prefix, slice) {
 
     dest.name = prefix + clear_tgt_content + formatted_date + " " + formatted_time + padder(i, 4, "-");
 
-
+    if(DEBUG){$.writeln("Looping sources for target " + data.tgt[i].toSource());}
     for (var j = 0; j < data.src.length; j++) {
       // var src_has_tgt = false;
       var clear_src_content = data.src[j].contents.slice(slice.src, -slice.src);
       // var clear_src_content = string_cleaner(tmp_src);
       if (DEBUG) {
-        $.writeln(clear_src_content);
+        $.writeln("Source: " + clear_src_content);
       }
 
-      if (clear_src_content == clear_tgt_content) {
+      if (clear_src_content === clear_tgt_content) {
         tgt_has_src = true;
         // src_has_tgt = true;
         unused_sources[j] = true;
@@ -478,15 +522,17 @@ var hl_builder = function(d, data, prefix, slice) {
         }
         report += data.src[j].contents + " --> " + data.tgt[i].contents + del;
         // try{
-
+        // if(DEBUG){$.writeln("ERROR: " +data.src[j].contents);}
+        // alert(data.src[j].toSource());
         var src = d.hyperlinkTextSources.add(data.src[j]);
         // }catch(e){
+          // data.src[j].fillColor = d.swatches[4];
         //   var str = "This text source is already in use by another hyperlink\n" + data.src[j].contents;
         //   alert(str);
         //   report+=str;
         //   continue;
         // }
-        src.name = prefix + clear_src_content + formatted_date + " " + formatted_time + padder(j, 4, "-");
+        src.name = prefix + clear_src_content + formatted_date + " " + formatted_time + String(i) + padder(j, 4, "-");
         // try {
 
         var hl = d.hyperlinks.add({

@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! cross-reference.jsx - v0.4.6 - 2015-07-07 */
+/*! cross-reference.jsx - v0.4.6 - 2015-11-26 */
 /*
  * cross-reference.jsx
  * creates hyperlinks from patterns

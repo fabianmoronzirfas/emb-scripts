@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! image-reference.jsx - v0.4.7 - 2015-07-07 */
+/*! image-reference.jsx - v0.4.7 - 2015-11-26 */
 /*
  * image-reference.jsx
  * creates hyperlinks from patterns

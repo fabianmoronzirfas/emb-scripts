@@ -23,7 +23,7 @@ module.exports = function(grunt) {
       scripts: {
         src: [
           "src/head.jsx",
-          "src/global.jsx",
+          "../extendscript_modules/globals.jsx",
           "src/settings.jsx",
           "../extendscript_modules/system.jsx",
           "../extendscript_modules/reseter.jsx",

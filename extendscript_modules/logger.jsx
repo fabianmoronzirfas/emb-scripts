@@ -5,13 +5,14 @@
  * @param  {String}    str  the string to log
  * @return {nothing}
  */
-var logger = function(d, str) {
+var logger = function(d, str, fn) {
   var del = settings.delimiter;
   var folder = Folder(d.filePath + "/script-logs");
   if(folder.exists !== true){
     folder.create();
   }
-  var path = folder.fsName + "/log." + File($.fileName).name + " " + formatted_date + " " + formatted_time + ".txt";
+
+  var path = folder.fsName + "/log." + nf +"." + File($.fileName).name + " " + formatted_date + " " + formatted_time + ".txt";
   if (DEBUG) {
     $.writeln(path);
   }

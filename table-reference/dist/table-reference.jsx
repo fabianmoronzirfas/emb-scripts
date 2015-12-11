@@ -1,6 +1,6 @@
 (function(thisObj) {
 
-/*! table-reference.jsx - v0.2.5 - 2015-11-26 */
+/*! table-reference.jsx - v0.2.6 - 2015-12-11 */
 /*
  * table-reference.jsx
  * creates hyperlinks from patterns
@@ -44,7 +44,7 @@
 
 // #target "indesign-8" // jshint ignore:line
 
-var DEBUG = false;
+var DEBUG = true;
 var now = new Date();
 var formatted_date = now.getUTCFullYear().toString() + "-" + (now.getUTCMonth() + 1).toString() + "-" + now.getUTCDate().toString();
 var formatted_time = now.getHours().toString()+ "-" + now.getMinutes().toString() + "-" +now.getSeconds().toString();
@@ -172,13 +172,14 @@ var padder = function(n, width, z) {
  * @param  {String}    str  the string to log
  * @return {nothing}
  */
-var logger = function(d, str) {
+var logger = function(d, str, fn) {
   var del = settings.delimiter;
   var folder = Folder(d.filePath + "/script-logs");
   if(folder.exists !== true){
     folder.create();
   }
-  var path = folder.fsName + "/log." + File($.fileName).name + " " + formatted_date + " " + formatted_time + ".txt";
+
+  var path = folder.fsName + "/log." + nf +"." + File($.fileName).name + " " + formatted_date + " " + formatted_time + ".txt";
   if (DEBUG) {
     $.writeln(path);
   }
@@ -447,8 +448,11 @@ var hl_builder = function(d, data, prefix, slice) {
   if(targets_not_clean === true){
     var str_tgts = alltargets.join("\n");
     var str_report = cleantargets_report.join("\n");
-    alert("You have to many targets. I can't process them. Please use the upcoming report to clean your document");
-    logger(d, "ERROR REPORT DUPLICATE TARGETS"+del+"All targets:"+del+ str_tgts + del + "DUPLICATES:" + del+ str_report);
+    var res = prompt("You have to many targets! I can't process them. Best thing is to revert to the last saved state?\n All changes the script made will be lost! Please use the upcoming report to clean your document. Fix your targets in your document and run the script again. Best is you DONT SAVE the document.");
+    if(res ===true){
+      d.revert();
+    }
+    logger(d, "ERROR REPORT DUPLICATE TARGETS"+ del + "DUPLICATES:" + del+ str_report +del+"All targets in document:"+del+ str_tgts ,"DUPLICATES");
     // abort write log!
     exit();
   }
@@ -463,7 +467,7 @@ var hl_builder = function(d, data, prefix, slice) {
     if (DEBUG) {
       $.writeln("Target: " + clear_tgt_content);
     }
-    report += "## " + data.tgt[i].contents + del + del;
+    report += "------- " + data.tgt[i].contents + "-------" + del + del;
 
     var dest = null;
     // try{
@@ -715,7 +719,7 @@ var main = function() {
       results[1].unused_tgt_report + line + del +
       results[0].report + results[1].report;
 
-    logger(doc, res);
+    logger(doc, res, "HYPERLINKS");
 
   } else {
 

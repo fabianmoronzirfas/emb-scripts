@@ -41,12 +41,12 @@ var main = function() {
     // $.writeln(data);
     var del = settings.delimiter;
     var result = hyperlinker(doc, data);
-    var str = "#Overview: " + del + "Found: " + del + "Sources: " + data.src.length + del + "Targets: " + data.tgt.length + del + del;
+    var str = "Overview: " + del + "Found: " + del + "Sources: " + data.src.length + del + "Targets: " + data.tgt.length + del + del;
 
     cleaner(doc, data.src, result.unused_sources, settings.source.fcquery, settings.source.mode,null,null);
     cleaner(doc, data.tgt, result.unused_targets, settings.target.fcquery, settings.target.mode,null,null);
     var line = del + "---------------------------------" + del;
-    logger(doc, str + result.unused_src_report + del + result.unused_tgt_report + line + del + result.report);
+    logger(doc, str + result.unused_src_report + del + result.unused_tgt_report + line + del + result.report, "HYPERLINKS");
 
   } else {
 

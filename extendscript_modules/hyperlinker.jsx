@@ -103,8 +103,11 @@ var hl_builder = function(d, data, prefix, slice) {
   if(targets_not_clean === true){
     var str_tgts = alltargets.join("\n");
     var str_report = cleantargets_report.join("\n");
-    alert("You have to many targets. I can't process them. Please use the upcoming report to clean your document");
-    logger(d, "ERROR REPORT DUPLICATE TARGETS"+del+"All targets:"+del+ str_tgts + del + "DUPLICATES:" + del+ str_report);
+    var res = prompt("You have to many targets! I can't process them. Best thing is to revert to the last saved state?\n All changes the script made will be lost! Please use the upcoming report to clean your document. Fix your targets in your document and run the script again. Best is you DONT SAVE the document.");
+    if(res ===true){
+      d.revert();
+    }
+    logger(d, "ERROR REPORT DUPLICATE TARGETS"+ del + "DUPLICATES:" + del+ str_report +del+"All targets in document:"+del+ str_tgts ,"DUPLICATES");
     // abort write log!
     exit();
   }
@@ -119,7 +122,7 @@ var hl_builder = function(d, data, prefix, slice) {
     if (DEBUG) {
       $.writeln("Target: " + clear_tgt_content);
     }
-    report += "## " + data.tgt[i].contents + del + del;
+    report += "------- " + data.tgt[i].contents + "-------" + del + del;
 
     var dest = null;
     // try{

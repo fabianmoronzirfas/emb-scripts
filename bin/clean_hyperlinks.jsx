@@ -90,7 +90,7 @@ var hl_destroyer = function(d, prefix) {
  */
 var hl_builder = function(d, data, prefix, slice) {
   var del = settings.delimiter;
-  var report = "";
+  var report = "--------------------------\nThe following lines contain a found connections.";
   var unused_tgt_report = "";
   var unused_src_report = "";
   var unused_sources = [];
@@ -114,7 +114,7 @@ var hl_builder = function(d, data, prefix, slice) {
     var clear_tgt_content = data.tgt[i].contents.slice(slice.tgt, -slice.tgt);
     clear_tgt_content = string_cleaner(clear_tgt_content);
     // if(DEBUG) $.writeln(clear_content);
-    report += "## " + data.tgt[i].contents + del + del;
+    report += "-------- " + data.tgt[i].contents + "--------" + del + del;
     var dest = d.hyperlinkTextDestinations.add(data.tgt[i]);
     dest.name = prefix + clear_tgt_content + formatted_date + " " + formatted_time + padder(i, 4, "-");
 

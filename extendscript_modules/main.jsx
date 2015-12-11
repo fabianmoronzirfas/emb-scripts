@@ -125,7 +125,7 @@ var main = function() {
       results[1].unused_tgt_report + line + del +
       results[0].report + results[1].report;
 
-    logger(doc, res);
+    logger(doc, res, "HYPERLINKS");
 
   } else {
 
